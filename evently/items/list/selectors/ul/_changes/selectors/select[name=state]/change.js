@@ -12,7 +12,9 @@ function() {
       doc.edit_by = $$("#account").userCtx.name;
       $$(select).app.db.saveDoc(doc, {
         success : function(r) {
-          $("#profile .saved").html('<span/>').text("Updated: "+doc.message);
+            $("#profile .saved").html('<span/>')
+                .text("Updated: "+doc.message).show();
+            setTimeout(function() { $("#profile .saved").slideUp(); }, 3000);
         }
       });
     }
