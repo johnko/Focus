@@ -1,36 +1,60 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title>Focus - collaborative messaging for distributed teams</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"/>
-    <link rel="stylesheet" href="style/main.css" type="text/css">
+    <link rel="stylesheet" href="style/mobile.css" type="text/css">
   </head>
+
   <body>
-    <div id="account"></div>
-    <h1><a href="index.html">Focus</a>: <span id="nav"></span></h1>
+    
+    <div id="header">
+      <div id="account"></div>
+      <h1><a href="index.html">Focus</a></h1>
+    </div>
+
+    <div id="nav"></div>
     <div id="profile"></div>
     <div id="items"></div>
+
   </body>
+
   <script src="vendor/couchapp/loader.js"></script>
   <script src="vendor/couchapp/jquery.pathbinder.js"></script>
   <script type="text/javascript" charset="utf-8">
+
     $.evently.changesOpts.include_docs = true;
     setTimeout(function() {
+
       $.couch.app(function(app) {
+
         $("#account").evently("account", app);
         $("#profile").evently("profile", app);
         $("#nav").evently("nav", app);
+        $("#items").evently("items", app);
+
         $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
         $.evently.connect("#account","#nav", ["loggedIn","loggedOut"]);
-        $("#items").evently("items", app);
+
         $("#account").bind("loggedIn", function() {
           $("body").trigger("evently-changes-"+app.db.name);
         });
+
         $("#account").bind("loggedOut", function() {
           $("body").trigger("evently-changes-"+app.db.name);
         });
+
         $.pathbinder.begin("/focus");
-      });
-    }, 100); // wish there was a better way to keep the URL bar from showing loading forever on Android
+
+        // Scroll past the url bar
+        setTimeout(function () {
+          $('html, body').animate({scrollTop: 1});
+        }, 200);
+    });
+
+    // wish there was a better way to keep the URL bar from showing 
+    // loading forever on Android
+    }, 100); 
   </script>
 </html>

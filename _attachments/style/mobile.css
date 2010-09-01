@@ -1,0 +1,284 @@
+/* add styles here */
+
+html, body { 
+    padding : 0px;
+    margin  : 0px;
+    height  : 100%;
+}
+
+body {
+    padding-bottom : 30px;
+    font           : 1em Helvetica, Arial, sans-serif;
+}
+
+#header { 
+    padding:10px 5px;
+    background:  
+    -moz-linear-gradient(top, 
+                         rgba(100, 100, 100, 1), 
+                         rgba(100, 100, 100, 0.5)),
+    -moz-linear-gradient(top, rgba(0, 0, 0, 0) 95%, #000 100%);
+    background:  
+    -webkit-gradient(linear, left top, left bottom, 
+                     from(rgba(100, 100, 100, 1)), 
+                     to(rgba(100, 100, 100, 0.5))),
+    -webkit-gradient(linear, left top, left bottom, 
+                     color-stop(0.9, rgba(0, 0, 0, 0)),
+                     color-stop(1, #333));
+}
+
+h1 { 
+    margin : 0px;
+}
+
+h1 a {
+    width           : 200px;
+    display         : block; 
+    text-decoration : none;
+    color           : black;
+    letter-spacing  : -2px;
+}
+
+#account {
+    margin : 8px 10px 0px 0px;
+    float  : right;
+}
+
+#account form {
+    background : #EEE;
+    padding    : 10px;
+}
+input[type="text"], input[type="password"] { 
+    padding   : 2px;
+    font-size : 90%;
+    border    : 1px solid #999;
+}
+
+fieldset { 
+    padding       : 0px;
+    margin-bottom : 10px;
+    border        : 0px;
+    overflow      : auto;
+}
+
+label {
+    display : block;
+}
+
+#items, #active {
+    width : 100%;
+}
+
+ul {
+    list-style : none;
+    margin     : 0;
+    padding    : 0;
+}
+
+ul { 
+    border-top : 1px solid #666; 
+}
+li {
+    border-bottom : 1px solid #666;
+}
+
+li .message {
+    padding : 2px;
+}
+
+input[name=message] {
+    width : 90%;
+}
+
+li .state {
+    float : right;
+}
+
+.item {
+    min-height : 48px;
+}
+
+.details {
+    padding : 4px;
+}
+
+.item, .details {
+    background : #EEE;
+    padding    : 8px;
+}
+
+.item.noshare, .details.noshare {
+    border : 2px solid #faa;
+}
+
+.shared {
+    border : 2px solid #4d4;
+}
+
+.now, .active {
+    background-color : #cfb;
+}
+.later, .someday {
+    background-color : #fff;
+    color            : #888;
+}
+.done {
+    background-color : #ddf !important;
+    color            : #444;
+}
+
+.blocked {
+    background-color : #fb8;
+    border           : 2px solid #f00;
+}
+
+#profile {
+    padding : 8px;
+}
+
+#profile label {
+    display : block;
+}
+
+.ava {
+    float        : left;
+    width        : 55px;
+    margin-right : 4px;
+    text-align   : center;
+    padding      : 4px;
+}
+
+.ava img {
+    width:40px;
+    height:40px;
+}
+
+.small {
+    font-size:0.8em;
+}
+
+div.avatar {
+    padding        : 2px;
+    padding-bottom : 0;
+    margin-right   : 4px;
+    float          : left;
+    font-size      : 0.78em;
+    width          : 60px;
+    height         : 60px;
+    text-align     : center;
+}
+
+div.avatar .name {
+    padding-top : 2px;
+    position    : absolute;
+    top         : 0;
+    right       : 0;
+}
+
+div.avatar img {
+    margin  : 0 auto;
+    padding : 0;
+    width   : 40px;
+    height  : 40px;
+}
+
+#nav { 
+    margin     : 5px;
+    padding    : 10px;
+    text-align : center;
+}
+
+#nav a { 
+    padding         : 5px 10px; 
+    margin          : 5px;
+    background      : 
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
+    border          : 1px solid #999;
+    border-radius   : 3px;
+    text-decoration : none;
+}
+
+#message { 
+    border        : 1px solid #999;
+    padding       : 2px;
+    width         : 100%; 
+    margin-bottom : 5px;
+    -webkit-box-sizing : border-box;
+    -moz-box-sizing    : border-box;
+}
+
+select { 
+    padding:2px; 
+}
+
+.saved { 
+    position   : fixed; 
+    top        : 0px; 
+    left       : 0px; 
+    padding    : 20px 10px;
+    text-align : center; 
+    width      : 100%;
+    background : #A6B9D9;
+    display    : none;
+    opacity    : 0.9;
+}
+
+#create { 
+    float   : right; 
+    padding : 2px;
+}
+
+.clearfix:after {
+    content    : ".";
+    display    : block;
+    height     : 0;
+    clear      : both;
+    visibility : hidden;
+}
+
+.cancel { 
+    position : absolute;
+    bottom   : 10px;
+    right    : 10px;
+    display  : none;
+}
+
+#nav a, .btn { 
+    padding            : 5px 5px; 
+    margin-left        : 5px;
+    background         : 
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
+    background         :
+    -moz-linear-gradient(center top , #F9F9F9, #E3E3E3) 
+    repeat scroll 0 0 transparent;
+    border             : 1px solid #666;
+    border-radius      : 3px;
+    -moz-border-radius : 3px;
+    text-decoration    : none;
+    cursor             : pointer;
+}
+
+
+.cover { 
+    position   : absolute;
+    top        : 0;
+    left       : 0;
+    width      : 100%;
+    height     : 100%;
+    background : black;
+    opacity    : 0.8;
+    z-index    : 100;
+}
+
+.dialog { 
+    margin-top  : 10px;
+    position    : absolute;
+    z-index     : 200;
+    width       : 220px;
+    left        : 50%;
+    margin-left : -110px;
+}
+
+.save { 
+    text-align:right; 
+}

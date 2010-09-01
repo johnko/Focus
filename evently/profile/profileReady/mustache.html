@@ -1,13 +1,13 @@
 <div class="item">
-  <form>
-    <input type="text" name="message" size=40 value="{{message}}">
+  <form class="clearfix">
+    <input type="text" name="message" id="message" value="{{message}}">
     <br/>
-    Set state: <select name="state">
+    <select name="state">
       {{#states}}
         <option value="{{state}}" {{selected}}>{{state}}</option>
       {{/states}}
     </select>
-    <input type="submit" value="Create new item">
+    <input type="submit" id="create" value="Create" />
     <span class="saved"></span>
   </form>
 </div>

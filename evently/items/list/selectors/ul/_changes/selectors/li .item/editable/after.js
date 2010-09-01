@@ -4,5 +4,5 @@ function(doc) {
     message = $("[name=message]", this), 
     right = $("select", this).position().left, 
     left = message.position().left;
-  message.width(right - left - 12);
+  message.width(right - left - 12)[0].focus();
 };
