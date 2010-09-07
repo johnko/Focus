@@ -11,6 +11,14 @@ body {
     font           : 1em Helvetica, Arial, sans-serif;
 }
 
+h1 { 
+    margin : 0px;
+}
+
+#account h3 {
+    margin-top:0px;
+}
+
 #header { 
     padding:10px 5px;
     background:  
@@ -27,16 +35,13 @@ body {
                      color-stop(1, #333));
 }
 
-h1 { 
-    margin : 0px;
-}
-
 h1 a {
     width           : 200px;
     display         : block; 
     text-decoration : none;
     color           : black;
     letter-spacing  : -2px;
+    text-shadow:#BBB 1px 1px 1px;
 }
 
 #account {
@@ -78,6 +83,10 @@ ul {
 ul { 
     border-top : 1px solid #666; 
 }
+.users { 
+    border-top : none; 
+}
+
 li {
     border-bottom : 1px solid #666;
 }
@@ -95,6 +104,8 @@ li .state {
 }
 
 .item {
+    background : #EEE;
+    padding:5px;
     min-height : 48px;
 }
 
@@ -102,9 +113,10 @@ li .state {
     padding : 4px;
 }
 
-.item, .details {
+#profile .item {
     background : #EEE;
     padding    : 8px;
+    border     : 1px solid #CCC;
 }
 
 .item.noshare, .details.noshare {
@@ -129,20 +141,21 @@ li .state {
 
 .blocked {
     background-color : #fb8;
-    border           : 2px solid #f00;
+    border-top       : 2px solid #f00;
+    border-bottom    : 2px solid #f00;
 }
 
 #profile {
     padding : 8px;
+    padding-bottom: 18px;
 }
-
 #profile label {
     display : block;
 }
 
 .ava {
     float        : left;
-    width        : 55px;
+    width        : 40px;
     margin-right : 4px;
     text-align   : center;
     padding      : 4px;
@@ -183,7 +196,7 @@ div.avatar img {
 }
 
 #nav { 
-    margin     : 5px;
+    margin     : 15px 5px;
     padding    : 10px;
     text-align : center;
 }
@@ -224,8 +237,10 @@ select {
 }
 
 #create { 
+    margin:0px;
     float   : right; 
-    padding : 2px;
+    font-size:110%;
+    padding : 5px;
 }
 
 .clearfix:after {
@@ -243,21 +258,36 @@ select {
     display  : none;
 }
 
-#nav a, .btn { 
-    padding            : 5px 5px; 
-    margin-left        : 5px;
-    background         : 
+input[type="submit"] {
+    padding               : 5px 5px; 
+    background            : 
     -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
-    background         :
+    background            :
     -moz-linear-gradient(center top , #F9F9F9, #E3E3E3) 
     repeat scroll 0 0 transparent;
-    border             : 1px solid #666;
-    border-radius      : 3px;
-    -moz-border-radius : 3px;
-    text-decoration    : none;
-    cursor             : pointer;
+    border                : 1px solid #666;
+    border-radius         : 3px;
+    -moz-border-radius    : 3px;
+    -webkit-border-radius : 3px;
+    text-decoration       : none;
+    cursor                : pointer;
 }
 
+#nav a, .btn { 
+    padding               : 5px 5px; 
+    margin                : 0px 10px;
+    background            : 
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
+    background            :
+    -moz-linear-gradient(center top , #F9F9F9, #E3E3E3) 
+    repeat scroll 0 0 transparent;
+    border                : 1px solid #666;
+    border-radius         : 3px;
+    -moz-border-radius    : 3px;
+    -webkit-border-radius : 3px;
+    text-decoration       : none;
+    cursor                : pointer;
+}
 
 .cover { 
     position   : absolute;
@@ -271,7 +301,7 @@ select {
 }
 
 .dialog { 
-    margin-top  : 10px;
+    margin-top  : 5px;
     position    : absolute;
     z-index     : 200;
     width       : 220px;
@@ -279,6 +309,48 @@ select {
     margin-left : -110px;
 }
 
-.save { 
-    text-align:right; 
+.save {
+    display:block;
+    margin-top:20px;
 }
+
+.delete { 
+    color:red;
+}
+
+.confirm { 
+    color:green;
+}
+
+.warning { 
+    margin      : 5px;
+    background  : red;
+    color       : white;
+    padding     : 5px 0px;
+    font-weight : bold;
+    text-align  : center;
+}
+
+/* .members { display:inline; } */
+    
+textarea[name="message"] { 
+    width:100%;
+    margin-bottom:10px;
+    -webkit-box-sizing : border-box;
+    -moz-box-sizing    : border-box;
+
+}
+
+label.checkbox { 
+    background:#FEFEFE;
+    border:1px solid #CCC;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    padding:3px;
+    margin:10px 0px;
+}
+
+.desc, .tags { 
+    padding: 0px 10px;
+}
+

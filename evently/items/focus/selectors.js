@@ -1,7 +1,9 @@
 function(e, params) {
+
   var app = $$(this).app,
     list = app.ddoc.evently.items.list.selectors.ul._changes;
     eval("var query = "+list.query+";");
+
     var widget = {
       _init : {
         mustache : list.mustache,

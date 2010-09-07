@@ -1,27 +1,39 @@
 <form>
+  <textarea name="message">{{{message}}}</textarea>
+  <input type="hidden" name="_rev" value="{{_rev}}">
+  <input type="hidden" name="_id" value="{{_id}}">
+
+  <fieldset>
   <div class="ava">
     {{#gravatar_url}}
     <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}"/>
     {{/gravatar_url}}
-    <div class="members">{{name}}</div>
   </div>
-  <span class="state">
+
+    Assigned to: 
+    <div class="members">{{name}}</div>
+  </fieldset>
+    
+  <fieldset>
+  State:
+  <div>
     <select name="state">
       {{#states}}
       <option value="{{state}}" {{selected}}>{{state}}</option>
       {{/states}}
     </select>
-  </span>
-  <textarea name="message">{{{message}}}</textarea>
-  <!-- <input type="text" name="message" size="40" value="{{{message}}}"> -->
-  <br/>
-  <input type="hidden" name="_rev" value="{{_rev}}">
-  <input type="hidden" name="_id" value="{{_id}}">
-  <label><input type="checkbox" name="publish" {{pchecked}}> publish</label>
-  <label><input type="checkbox" name="blocked" {{bchecked}}> blocked</label>
+  </div>
+  </fieldset>
+
+  <label class="checkbox">
+    <input type="checkbox" name="publish" {{pchecked}}> publish
+  </label>
+  <label class="checkbox">
+    <input type="checkbox" name="blocked" {{bchecked}}> blocked
+  </label>
+
   <p class="save">
-    <input type="submit" value="Finish Editing">
-    <input type="button" name="delete" value="Delete">
+    <input type="submit" value="Finish Editing" class="btn confirm" />
+    <input type="button" name="delete" value="Delete" class="btn delete" /> 
   </p>
 </form>
-<div style="clear:left;"></div>
