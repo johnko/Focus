@@ -1,14 +1,16 @@
-<h1>Team Focus</h1>
-<p>This page has a list of every user with their items from the last week. It is designed to enable realtime collaboration during a weekly call type situation.</p>
+<div class="desc">
+  <h1>Team Focus</h1>
+  <p>This page has a list of every user with their items from the last week. It is designed to enable realtime collaboration during a weekly call type situation.</p>
+</div>
 <ul class="users">
   {{#users}}
     <li class="user" data-user="{{name}}">
-      <h2><a href="#/items/{{name}}">{{name}}</a></h2>
-      <h3>Done in the last week</h3>
+      <h2 class="desc"><a href="#/items/{{name}}">{{name}}</a></h2>
+      <h3 class="desc">Done in the last week</h3>
       <ul class="sdone"></ul>
-      <h3>Active now</h3>
+      <h3 class="desc">Active now</h3>
       <ul class="snow"></ul>
-      <h3>Blocked</h3>
+      <h3 class="desc">Blocked</h3>
       <ul class="sblocked"></ul>
     </li>
   {{/users}}
