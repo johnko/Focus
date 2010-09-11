@@ -1,19 +1,11 @@
 <form>
   <p>Hello {{name}}, Please setup your user profile.</p>
-  <fieldset>
-    <label for="nickname">Nickname</label>
-    <input type="text" name="nickname" value="" />
-  </fieldset>
-  <fieldset>
-    <label for="email">Email 
-      (<em>for <a href="http://gravatar.com">Gravatar</a></em>)
-    </label>
-    <input type="text" name="email" value="" />
-  </fieldset>
-  <fieldset>
-    <label for="url">URL</label>
-    <input type="text" name="url" value="">
-  </fieldset>
-  <input type="submit" value="Go &rarr;" />
+  <label for="nickname">Nickname 
+    <input type="text" name="nickname" value=""></label>
+  <label for="email">Email (<em>for <a href="http://gravatar.com">Gravatar</a></em>)
+    <input type="text" name="email" value=""></label>
+  <label for="url">URL 
+    <input type="text" name="url" value=""></label>
+  <input type="submit" value="Go &rarr;">
   <input type="hidden" name="userCtxName" value="{{name}}" id="userCtxName">
 </form>
