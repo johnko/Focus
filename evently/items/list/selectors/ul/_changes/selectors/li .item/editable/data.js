@@ -26,6 +26,5 @@ function(e) {
     name : doc.profile.name
   };
   v.bchecked = doc.blocked ? "checked" : "";
-  v.pchecked = doc.publish ? "checked" : "";
   return v;
 };
