@@ -9,5 +9,5 @@ function(doc) {
     right = $("select", this).position().left, 
     left = message.position().left;
   //message.width(right - left - 12)[0].focus();
-  message.focus();
+  //message.focus();
 };
