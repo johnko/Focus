@@ -22,6 +22,14 @@ function $$(node) {
     }
   };
   $.forIn = forIn;
+  $.argsToArray = function(args) {
+    if (!args.callee) return args;
+    var array = [];
+    for (var i=0; i < args.length; i++) {
+      array.push(args[i]);
+    };
+    return array;
+  }
   function funViaString(fun, hint) {
     if (fun && fun.match && fun.match(/^function/)) {
       eval("var f = "+fun);
@@ -67,7 +75,11 @@ function $$(node) {
     },
     paths : [],
     changesDBs : {},
-    changesOpts : {}
+    changesOpts : {},
+    utils : {
+      runIfFun : runIfFun,
+      funViaString : funViaString
+    }
   };
   
   function extractFrom(name, evs) {
@@ -187,20 +199,25 @@ function $$(node) {
   };
   
   $.fn.replace = function(elem) {
-    // $.log("Replace", this)
     $(this).empty().append(elem);
   };
-  
-  // todo: ability to call this
-  // to render and "prepend/append/etc" a new element to the host element (me)
-  // as well as call this in a way that replaces the host elements content
-  // this would be easy if there is a simple way to get at the element we just appended
-  // (as html) so that we can attache the selectors
-  function renderElement(me, h, args, qrun, arun) {
-    // if there's a query object we run the query,
-    // and then call the data function with the response.
-    if (h.before && (!qrun || !arun)) {
-      funViaString(h.before, me).apply(me, args);
+
+  function renderElement(me, h, args, ran) {
+    ran = ran || {};
+    var fun, name, before = $.evently.fn.before;
+    for (name in before) {
+      if (before.hasOwnProperty(name)) {
+        if (h[name] && !ran[name]) {
+          ran[name] = true;
+          var cb = function() {
+            renderElement(me, h, 
+              $.argsToArray(arguments)
+                .concat($.argsToArray(args)), ran);
+          };
+          before[name].apply(me, [h, cb, args]);
+          return;
+        }
+      }
     }
     if (h.async && !arun) {
       runAsync(me, h, args)
@@ -208,45 +225,21 @@ function $$(node) {
       // $.log("query before renderElement", arguments)
       runQuery(me, h, args)
     } else {
-      // $.log("renderElement")
-      // $.log(me, h, args, qrun)
-      // otherwise we just render the template with the current args
-      var selectors = runIfFun(me, h.selectors, args);
-      var act = (h.render || "replace").replace(/\s/g,"");
-      var app = $$(me).app;
-      if (h.mustache) {
-        // $.log("rendering", h.mustache)
-        var newElem = mustachioed(me, h, args);
-        me[act](newElem);
-      }
-      if (selectors) {
-        if (act == "replace") {
-          var s = me;
-        } else {
-          var s = newElem;
+      // result of running multiple render engines is undefined
+      var rendered;
+      $.forIn($.evently.fn.render, function(name, fun) {
+        if (h[name]) {
+          rendered = fun.apply(me, [h, args]);
         }
-        forIn(selectors, function(selector, handlers) {
-          // $.log("selector", selector);
-          // $.log("selected", $(selector, s));
-          $(selector, s).evently(handlers, app, args);
-          // $.log("applied", selector);
-        });
-      }
-      if (h.after) {
-        runIfFun(me, h.after, args);
-      }
-    }    
+      });
+      $.forIn($.evently.fn.after, function(name, fun) {
+        if (h[name]) {
+          fun.apply(me, [h, rendered, args]);
+        }
+      });
+    }
   };
-  
-  // todo this should return the new element
-  function mustachioed(me, h, args) {
-    var partials = $$(me).partials;
-    return $($.mustache(
-      runIfFun(me, h.mustache, args),
-      runIfFun(me, h.data, args), 
-      runIfFun(me, $.extend(true, partials, h.partials), args)));
-  };
-  
+
   function runAsync(me, h, args) {  
     // the callback is the first argument
     funViaString(h.async, me).apply(me, [function() {
@@ -395,5 +388,63 @@ function $$(node) {
       }});
     }
   };
+
+  $.evently.fn = {
+    before : {},
+    render : {},
+    after : {}
+  };
+
+})(jQuery);
+
+// plugin system
+// $.evently.handlers
+// _init, _changes
+
+// before plugin
+(function($) {
+  $.evently.fn.before.before = function(h, cb, args) {
+    $.evently.utils.funViaString(h.before, this).apply(this, args);
+    cb()
+  };
+})(jQuery);
+
+// Mustache plugin
+(function($) {
+  var runIfFun = $.evently.utils.runIfFun;
+  function mustachioed(me, h, args) {
+    var partials = $$(me).partials; // global partials stored by _____
+    return $($.mustache(
+      runIfFun(me, h.mustache, args),
+      runIfFun(me, h.data, args), 
+      runIfFun(me, $.extend(true, partials, h.partials), args)));
+  };
   
+  $.evently.fn.render.mustache = function(h, args) {
+    var render = (h.render || "replace").replace(/\s/g,"")
+      , newElem = mustachioed(this, h, args);
+    this[render](newElem);
+    return newElem;
+  };
+})(jQuery);
+
+// Selectors plugin applies Evently to nested elements
+(function($) {
+  $.evently.fn.after.selectors = function(h, rendered, args) {
+    var render = (h.render || "replace").replace(/\s/g,"")
+      , root = (render == "replace") ? el : rendered
+      , el = this, app = $$(el).app
+      , selectors = $.evently.utils.runIfFun(el, h.selectors, args)
+      ;
+    $.forIn(selectors, function(selector, handlers) {
+      $(selector, root).evently(handlers, app, args);
+    });
+  };
+})(jQuery);
+
+// plugin to run the after callback
+(function($) {
+  $.evently.fn.after.after = function(h, rendered, args) {
+    $.evently.utils.runIfFun(this, h.after, args);
+  };
 })(jQuery);
