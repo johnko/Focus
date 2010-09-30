@@ -107,6 +107,7 @@ li .state {
     background : #EEE;
     padding:5px;
     min-height : 48px;
+    overflow:auto;
 }
 
 .details {
@@ -117,6 +118,7 @@ li .state {
     background : #EEE;
     padding    : 8px;
     border     : 1px solid #CCC;
+    overflow:hidden;
 }
 
 .item.noshare, .details.noshare {
@@ -155,7 +157,7 @@ li .state {
 
 .ava {
     float        : left;
-    width        : 40px;
+    width        : 60px;
     margin-right : 4px;
     text-align   : center;
     padding      : 4px;
@@ -354,3 +356,4 @@ label.checkbox {
     padding: 0px 10px;
 }
 
+.name { font-size:80%; }
