@@ -11,6 +11,7 @@ function(data, e) {
       var doc = r.value;
       p = doc.profile;
       p.rev = doc._rev;
+      p.public = !doc.publish && "noshare";
       p.message = $.linkify($.mustache.escape(doc.message));
       p.state = doc.state || "open";
       p.states = slib.selectStates(p.state);

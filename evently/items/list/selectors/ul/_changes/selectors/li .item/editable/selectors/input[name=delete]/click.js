@@ -7,6 +7,7 @@ function() {
     doc.state = f.state;
     doc._rev = f._rev;
     doc.blocked = f.blocked == "on";
+    doc.publish = f.publish == "on";
     doc.edit_at = new Date();
     doc.edit_by = $$("#account").userCtx.name;
     app.db.saveDoc(doc, {

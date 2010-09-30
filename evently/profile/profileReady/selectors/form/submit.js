@@ -2,11 +2,12 @@ function() {
   var form = $(this),
     f = form.serializeObject(),
     doc = {
-    created_at : new Date(),
-    profile : $$("#profile").profile,
-    message : f.message,
-    state : f.state,
-    type : "task"
+      created_at : new Date(),
+      profile : $$("#profile").profile,
+      publish : false,
+      message : f.message,
+      state : f.state,
+      type : "task"
   };
   $$(form).app.db.saveDoc(doc, {
     success : function(r) {
