@@ -1,0 +1,170 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <script src="vendor/couchapp/loader.js"></script> 
+        <script> 
+$.couch.app(function(app) {
+    // Start continuous replication
+    $('button.cloud-continuous').bind('click', function() {
+        $.ajax({
+            url:'/_replicate',
+            data: '{"source":"http://couchapp.org/focus", "target": "focus", "continuous": true}',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function(data){
+                //$('p.cloud-status span').text('Cloud <b class="arrow">\u21d2 \u21d4 \u21d0</b> Phone running');
+                $.ajax({
+                    url:'/_replicate',
+                    data: '{"target":"http://couchapp.org/focus", "source": "focus", "continuous": true}',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    success: function(data) {
+                        $('.cloud-status div.arrow').addClass('cloud-continuous').html('&#8660;');
+/*
+                        $('.cloud-status div.arrow')
+                            .animate({opacity: 0.2}, 1500)
+                            .animate({opacity: 1.0}, 1500);
+                        setInterval(function() {
+                            $('.cloud-status div.arrow')
+                                .animate({opacity: 0.2}, 1500).animate({opacity: 1.0}, 1500);
+                        }, 3000);
+*/
+                    }
+                });
+            }
+        });
+    });
+ 
+    // Stop continuous replication
+    $('.cloud-status .cloud-continuous').live('click', function() {
+        $.ajax({
+            url:'/_replicate',
+            data: '{"source":"http://couchapp.org/focus", "target": "focus", "continuous": true, "cancel": true}',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function(data){
+                $.ajax({
+                    url:'/_replicate',
+                    data: '{"target":"http://couchapp.org/focus", "source": "focus", "continuous": true, "cancel": true}',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    success: function(data) {
+                        $('.cloud-status div.arrow').removeClass('cloud-continuous').animate({opacity: '-=0.99'}, 1500,
+                            function() {$(this).html('&#160;').css({opacity: 1.0});
+                        });
+                    }
+                });
+            }
+        });
+    });
+ 
+    // Replicate to cloud
+    $('button.cloud-to').bind('click', function() {
+        $('.cloud-status div.arrow').html('&#8656;');
+        $.ajax({
+            url:'/_replicate',
+            data: '{"target":"http://couchapp.org/focus", "source": "focus"}',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function(data) {
+                // remove arrow
+                $('.cloud-status div.arrow').animate({opacity: '-=0.99'}, 1500,
+                    function() {$(this).html('&#160;').css({opacity: 1.0});
+                });
+            }
+        });
+    });
+ 
+    // Replicate from cloud
+    $('button.cloud-from').bind('click', function() {
+        $('.cloud-status div.arrow').html('&#8658;');
+        $.ajax({
+            url:'/_replicate',
+            data: '{"source":"http://couchapp.org/focus", "target": "focus"}',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function(data) {
+                // remove arrow
+                $('.cloud-status div.arrow').animate({opacity: '-=0.99'}, 1500,
+                    function() {$(this).html('&#160;').css({opacity: 1.0});
+                });
+            }
+        });
+    });
+});
+ 
+ 
+        </script> 
+        <style type="text/css"> 
+.cloud-status div.arrow {
+    font-size:100px;
+    font-weight:normal;
+    width:200px;
+    position: relative;
+    top: -10px;
+    text-align:center;
+}
+.cloud-status div.arrow.cloud-continuous {
+    cursor:pointer;
+}
+ 
+span.arrow {
+    font-size:80px;
+    margin-right:0.2em;
+    vertical-align:-17px;
+}
+object.cloud {
+    height:100px;
+    width:100px;
+}
+ol.cloud-status {
+    padding:0px;
+}
+ol.cloud-status li {
+    float:left;
+    list-style:none;
+    text-align:center;
+}
+ 
+ul.cloud-action button {
+    font-size:150%;
+    width:10em;
+    text-align:left;
+}
+ul.cloud-action li {
+    list-style:none;
+    text-align:center;
+}
+</style> 
+    </head>        
+    <body> 
+        <h1>Replication Demo</h1> 
+        <h2>Replication with the Cloud (http://couchapp.org)</h2> 
+        <ol class="cloud-status"> 
+            <li> 
+                <p>Cloud</p> 
+                <object data="weather-overcast2.svg" type="image/svg+xml" class="cloud"></object> 
+            </li> 
+            <li> 
+                <p>Status</p> 
+                <div class="arrow">&#160;</div> 
+            </li> 
+            <li> 
+                <p>Local</p> 
+                <object data="desktop.svg" type="image/svg+xml" class="cloud"></object> 
+            </li> 
+        </ol> 
+        <hr style="clear:both" /> 
+        <ul class="cloud-action"> 
+            <li> 
+                <button class="cloud-continuous"><span class="arrow">&#8660;</span>Continuous</button> 
+            </li> 
+            <li> 
+                <button class="cloud-to"><span class="arrow">&#8656;</span>To cloud</button> 
+            </li> 
+            <li> 
+                <button class="cloud-from"><span class="arrow">&#8658;</span>From cloud</button> 
+            </li> 
+        </ul> 
+  </body> 
+</html>

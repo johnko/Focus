@@ -6,7 +6,6 @@ function() {
     profile : $$("#profile").profile,
     message : f.message,
     state : f.state,
-    publish : true,
     type : "task"
   };
   $$(form).app.db.saveDoc(doc, {

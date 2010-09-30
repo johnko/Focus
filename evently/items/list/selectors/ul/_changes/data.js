@@ -16,7 +16,6 @@ function(data, e) {
       p.states = slib.selectStates(p.state);
       p.id = r.id;
       p.rev = doc._rev;
-      p.publish = !doc.publish && "noshare";
       p.blocked = doc.blocked && "blocked";
       return p;
     })
