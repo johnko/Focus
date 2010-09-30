@@ -1,7 +1,5 @@
 function(e, params) {
 
-  console.log(arguments);
-  
   var app  = $$(this).app,
       list = app.ddoc.evently.items.list.selectors.ul._changes;
 
