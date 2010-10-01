@@ -355,8 +355,17 @@ label.checkbox {
     margin:10px 0px;
 }
 
-.desc, .tags { 
+.desc, .tags, .mentions { 
     padding: 0px 10px;
+}
+
+.tags a, .mentions a { 
+    text-decoration:none;
+    margin:10px;
+    color:darkblue;
+}
+.tags a:hover, .mentions a:hover { 
+    color:lightblue;
 }
 
 .name { font-size:80%; }
