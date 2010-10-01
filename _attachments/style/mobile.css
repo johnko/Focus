@@ -80,14 +80,14 @@ ul {
     padding    : 0;
 }
 
-ul { 
+#items ul { 
     border-top : 1px solid #666; 
 }
 .users { 
     border-top : none; 
 }
 
-li {
+#items li {
     border-bottom : 1px solid #666;
 }
 
@@ -164,8 +164,11 @@ li .state {
 }
 
 .ava img {
+    display:block;
     width:40px;
+    background:#666;
     height:40px;
+    margin:0px auto;
 }
 
 .small {
@@ -198,20 +201,20 @@ div.avatar img {
 }
 
 #nav { 
-    margin     : 15px 5px;
-    padding    : 10px;
+    margin-bottom:15px;
+    /* padding    : 10px; */
     text-align : center;
 }
 
-#nav a { 
-    padding         : 5px 10px; 
-    margin          : 5px;
-    background      : 
-    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
-    border          : 1px solid #999;
-    border-radius   : 3px;
-    text-decoration : none;
-}
+/* #nav a {  */
+/*     padding         : 5px 10px;  */
+/*     margin          : 5px; */
+/*     background      :  */
+/*     -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3)); */
+/*     border          : 1px solid #999; */
+/*     border-radius   : 3px; */
+/*     text-decoration : none; */
+/* } */
 
 #message { 
     border        : 1px solid #999;
@@ -275,7 +278,7 @@ input[type="submit"] {
     cursor                : pointer;
 }
 
-#nav a, .btn { 
+.btn { 
     padding               : 5px 5px; 
     margin                : 0px 10px;
     background            : 
@@ -357,3 +360,39 @@ label.checkbox {
 }
 
 .name { font-size:80%; }
+
+#navigation { 
+    overflow:auto;
+    border-bottom:1px solid #666;
+}
+#navigation li { 
+    float:left;
+    width:25%;
+}
+#navigation li a {
+    text-decoration:none;
+    color:black;
+    padding:8px 0px;
+    line-height:100%;
+    background            : 
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#EEE));
+    background            :
+    -moz-linear-gradient(center top , #F9F9F9, #CCC) 
+    repeat scroll 0 0 transparent;
+    display:block;
+    outline:none;
+    border-left:1px solid #FFF;
+    border-right:1px solid #666;
+} 
+#navigation li:first-child a { 
+    border-left:0px;
+}
+
+#navigation li a.selected { 
+    background            :
+    -moz-linear-gradient(center top , blue, darkblue) 
+    repeat scroll 0 0 transparent;
+    color:white;
+    border-left:0px;
+    border-right:0px;
+}
