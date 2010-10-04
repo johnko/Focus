@@ -6,7 +6,7 @@
   <fieldset>
   <div class="ava">
     {{#gravatar_url}}
-    <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}"/>
+    <img src="{{gravatar_url}}" onerror="this.src='./outline.png';" alt="{{name}}" title="{{name}}"/>
     {{/gravatar_url}}
   </div>
 
