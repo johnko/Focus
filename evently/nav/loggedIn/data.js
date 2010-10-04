@@ -1,6 +1,7 @@
 function(e, r) {
-  setTimeout( function () { 
-    Focus.hashChanged(r.userCtx.name);
+  setTimeout( function () {
+    $.pathbinder.begin("/items/" + r.userCtx.name);
+    //Focus.hashChanged(r.userCtx.name);
   }, 0);
   return { me :  r.userCtx.name };
 };

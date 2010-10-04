@@ -14,9 +14,17 @@ var Focus = (function () {
       $("."+selected).addClass("selected");
     }
   };
+
+  function notifyMsg(msg) {
+    $("#profile .saved").html('<span/>').html(msg).show();
+    setTimeout(function() { 
+      $("#profile .saved").fadeOut();
+    }, 3000);    
+  };
   
   return {
-    hashChanged : hashChanged
+    hashChanged : hashChanged,
+    notifyMsg : notifyMsg
   };
 })();
 
@@ -48,7 +56,7 @@ setTimeout(function() {
                         $$("#account").userCtx.name || "");
     });
     
-    $.pathbinder.begin("/focus");
+    //$.pathbinder.begin("/focus");
     
     // Scroll past the url bar
     setTimeout(function () {

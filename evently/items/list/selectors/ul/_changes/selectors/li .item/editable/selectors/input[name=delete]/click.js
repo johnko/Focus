@@ -13,9 +13,7 @@ function() {
     app.db.saveDoc(doc, {
       success : function(r) {
         $('html,body').animate({scrollTop: $("#items").offset().top}, 1000);
-        $("#profile .saved").html('<span/>')
-              .text("Deleted: "+doc.message).show();
-        setTimeout(function() { $("#profile .saved").slideUp(); }, 3000);
+        Focus.notifyMsg("Deleted: "+doc.message);
       }
     });
   };
