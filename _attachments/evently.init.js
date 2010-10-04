@@ -34,7 +34,10 @@ $.evently.log = true;
 setTimeout(function() {
     
   $.couch.app(function(app) {
-    
+
+
+    Focus.linkUp = app.require("vendor/couchapp/lib/linkup");
+      
     $("#account").evently("account", app);
     $("#profile").evently("profile", app);
     $("#nav").evently("nav", app);

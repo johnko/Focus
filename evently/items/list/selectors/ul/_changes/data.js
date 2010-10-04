@@ -12,7 +12,7 @@ function(data, e) {
       p = doc.profile;
       p.rev = doc._rev;
       p.public = !doc.publish && "noshare";
-      p.message = $.linkify($.mustache.escape(doc.message));
+      p.message = Focus.linkUp.encode(doc.message); 
       p.state = doc.state || "open";
       p.states = slib.selectStates(p.state);
       p.id = r.id;

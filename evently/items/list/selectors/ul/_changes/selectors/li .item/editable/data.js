@@ -1,4 +1,5 @@
 function(e) {
+    
   var resp = e.data.args[0];
   var doc, docid = $(this).parents("li").attr("data-id");
   for (var i=0; i < resp.rows.length; i++) {
