@@ -3,11 +3,11 @@ var Focus = (function () {
   function hashChanged(name) {
     
     var hash     = window.location.hash.slice(1),
-        selected = (hash === "/items/" + name) ? "mine" // Ugly, tmp
+        selected = (hash === "/focus/" + name) ? "mine" // Ugly, tmp
       : (hash === "/focus") ? "all"
       : (hash === "/tags") ? "tags"
       : (hash.indexOf("/team") !== -1) ? "team"
-      : (hash.indexOf("/items/") !== -1) ? "team" : false;
+      : (hash.indexOf("/focus/") !== -1) ? "team" : false;
     
     $(".selected").removeClass("selected");
     if (selected) { 
