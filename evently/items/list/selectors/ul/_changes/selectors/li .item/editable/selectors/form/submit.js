@@ -6,7 +6,6 @@ function(e) {
     doc.state = f.state;
     doc._rev = f._rev;
     doc.blocked = f.blocked == "on";
-      console.log(f.published, f);
     doc.publish = f.publish == "on";
     doc.edit_at = new Date();
     doc.edit_by = $$("#account").userCtx.name;
