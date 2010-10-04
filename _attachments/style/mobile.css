@@ -30,12 +30,6 @@ a img {
     background:  
     -moz-linear-gradient(top,#4A71BF, #3B5998);
     background:  
-    -webkit-gradient(linear, left top, left bottom, 
-                     from(rgba(100, 100, 100, 1)), 
-                     to(rgba(100, 100, 100, 0.5))),
-    -webkit-gradient(linear, left top, left bottom, 
-                     color-stop(0.9, rgba(0, 0, 0, 0)),
-                     color-stop(1, #333));
     color:white;
 }
 
@@ -258,7 +252,7 @@ div.avatar img {
     width:95%;
     right:4px;
     left:4px;
-    
+    top:8px;
     /* left:4px; */
     /* border        : 1px solid #999; */
     padding       : 5px;
@@ -430,11 +424,12 @@ label.checkbox {
 }
 #navigation li a {
     text-decoration:none;
+    font-weight:bold;
     color:#CCC;
     padding:8px 0px;
     line-height:100%;
     background            : 
-    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#EEE));
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#4C5861), to(#384147));
     background            :
     -moz-linear-gradient(center top, #4C5861, #384147) 
     repeat scroll 0 0 transparent;
@@ -453,8 +448,10 @@ label.checkbox {
 
 #navigation li a.selected { 
     background            :
-    -moz-linear-gradient(center top, #A0B9CC, #889DAD) 
+    -moz-linear-gradient(center top, #A0B9CC, #A0B9CC) 
     repeat scroll 0 0 transparent;
+    background            : 
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#A0B9CC), to(#A0B9CC));
     color:white;
     border-left:0px;
     border-right:0px;
@@ -463,7 +460,7 @@ label.checkbox {
 #mainstate { display:none; }
 
 #footer { 
-    padding-top:10px;
+    padding:10px 0px;
     margin: 20px 10px; 
     font-size:90%;
     border-top:1px solid #AAA;
