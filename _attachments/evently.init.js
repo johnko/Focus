@@ -42,10 +42,12 @@ setTimeout(function() {
     $("#profile").evently("profile", app);
     $("#nav").evently("nav", app);
     $("#items").evently("items", app);
-    
+      
     $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
     $.evently.connect("#account","#nav", ["loggedIn","loggedOut"]);
-    
+    //$.evently.connect("#account","#items", ["loggedIn","loggedOut"]);
+
+      
     $("#account").bind("loggedIn", function() {
       $("body").trigger("evently-changes-"+app.db.name);
     });
