@@ -100,11 +100,13 @@ ul {
 }
 .users li a { 
     display:block;
-    margin:10px;
+    margin: 0px 10px 10px 10px;
     padding:10px;
     background:#EEE;
     border-bottom:none;
     text-decoration:none;
+    cursor:pointer;
+    -moz-border-radius:5px;
 }
 .users li h2 { 
     color:darkblue;
