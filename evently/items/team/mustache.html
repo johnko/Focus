@@ -3,13 +3,13 @@
   {{#users}}
   <li class="user" data-user="{{name}}">
     
-    <a href="#/focus/{{name}}">
+    <a href="#/focus/{{username}}">
 
       <div class="ava">
         <img src="{{gravatar_url}}" onerror="this.src='./outline.png';" title="{{name}}"/>
       </div>
       
-      <h2>{{name}}</h2>
+      <h2>{{username}}</h2>
     </a>
     <!-- <h3 class="desc">Done in the last week</h3> -->
     <!-- <ul class="sdone"></ul> -->

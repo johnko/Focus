@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <title>Focus - collaborative messaging for distributed teams</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"/>
@@ -9,23 +8,202 @@
 
   <body>
 
-    <div id="header">
-      <h1><a href="index.html">Focus</a></h1>
-    </div>
+    <ul id="navigation">
+      <li><a href="#!" class="navmine">Mine</a></li>
+      <li><a href="#!/team" class="navteam">Team</a></li>
+      <li><a href="#!/focus" class="navall">All</a></li>
+      <li><a href="#!/tags" class="navtags">Tags</a></li>
+    </ul>
 
-    <div id="nav"></div>
-    <div id="profile"></div>
-    <div id="items"></div>
+    <form id="create" class="clearfix" action="#create">
+      <input type="text" name="message" id="message" 
+             placeholder="What am I working on?" value="" />
+      <input type="submit" class="btn" id="createbtn" value="Create" />
+    </form>
 
+    <div id="notify"></div>
+
+    <div id="content" class="loading">&nbsp;</div>
+    
     <div id="footer">
-      <!-- <a href="#replication" class="btn">Set Up Replication</a> -->
-      <div id="account"></div>
+      <a href="#!/logout">Logout</a>
     </div>
+
+    <script type="text/html" id="tags_tpl">
+      <h2>Tags</h2>
+      <ul class="tags">
+        {{#tags}}
+        <li><a href="#!/tags/{{name}}" style="font-size:{{size}}px">
+            #{{name}}
+        </a></li>
+        {{/tags}}
+      </ul>
+
+      <h2>Mentions</h2>
+      <ul class="mentions">
+        {{#mentions}}
+        <li><a href="#!/mentions/{{name}}" style="font-size:{{size}}px">
+            @{{name}}
+        </a></li>
+        {{/mentions}}
+      </ul>
+    </script>
+
+    <script type="text/html" id="login_tpl">
+      <form action="#login" id="mainlogin">
+        <h3>Login</h3>
+        
+        <label for="name">
+          <span>Name</span>
+          <input type="text" autocorrect="off" autocapitalize="off" 
+                 value="" name="name" placeholder="username" />
+        </label>
+        <label for="password">
+          <span>Password</span>
+          <input type="password" value="" name="password" />
+        </label>
+        <input type="submit" value="Login" />
+      </form>
+    </script>
+    
+    <script type="text/html" id="users_tpl">
+      <ul id="items" class="users">
+        {{#users}}{{#profile}}
+        <li class="user" data-user="{{name}}">
+            <a href="#!/team/{{name}}">
+              <div class="ava">
+                <img src="{{gravatar_url}}" 
+                     onerror="this.src='./outline.png';" 
+                     title="{{name}}" />
+              </div>
+              <h3>{{name}}</h3>
+            </a>
+        </li>
+        {{/profile}}{{/users}}
+      </ul>
+    </script>
+
+
+    <script type="text/html" id="items_tpl">
+      <h2>{{title}}</h2>
+      <ul id="items">
+        {{#items}}
+        <li class="{{published}} {{isSelf}}">
+          <div data-id="{{_id}}" class="item {{state}} {{blocked}}">
+            <div class="ava">
+              {{#profile}}
+              <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}"/>
+              <span class="name">{{name}}</span>
+              {{/profile}}
+            </div>
+            <span class="state">
+              <a class="public">
+                <img src="./eye2.png" />
+              </a>
+              <!-- <select name="state"> -->
+              <!--   {{#states}} -->
+              <!--   <option value="{{state}}" {{selected}}>{{state}}</option> -->
+              <!--   {{/states}} -->
+              <!-- </select> -->
+            </span>
+            <div class="message">{{{message}}}</div>
+          </div>
+        </li>
+        {{/items}}
+        {{^items}}
+        <li class="none">Nothing to see here</li>
+        {{/items}}
+      </ul>
+    </script>
+
+    <script type="text/html" id="overview_tpl">
+      {{#profile}}
+      <div class="profileheader">
+        <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}"/>
+        <h2>{{name}}'s Profile</h2>
+      </div>
+      {{/profile}}
+      <h2>Now</h2>
+      {{{now}}}
+      <h2>Later</h2>
+      {{{later}}}
+      <h2>Done</h2>
+      {{{done}}}
+    </script>
+
+    <script type="text/html" id="edit_tpl">
+
+      <form action="#edit" id="editform">
+
+        <textarea name="message">{{{message}}}</textarea>
+        <input type="hidden" name="_rev" value="{{_rev}}">
+        <input type="hidden" name="_id" value="{{_id}}" />
+        
+        <fieldset class="first">
+          <label for="assigned">Assigned to:</label>
+          <div>
+            <select name="assigned">
+              {{#users}}
+              <option {{selected}}>{{name}}</option>
+              {{/users}}
+            </select>
+            {{#profile}}
+            <img src="{{gravatar_url}}" id="avapreview" class="gravatar"
+                 onerror="this.src='./outline.png';" 
+                 alt="{{name}}" title="{{name}}"/>
+            {{/profile}}
+          </div>
+        </fieldset>
+        
+        <fieldset>
+          <label for="state">State:</label>
+          <div>
+            <select name="state">
+              {{#states}}
+              <option value="{{state}}" {{selected}}>{{state}}</option>
+              {{/states}}
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <label for="publish">Share with everyone</label>
+          <div>
+            <input type="checkbox" name="publish" id="publish"
+                   {{#publish}}checked="checked"{{/publish}} />
+          </div>
+        </fieldset>
+
+        <fieldset class="last">
+          <label for="blocked">Blocked</label>
+          <div>
+            <input type="checkbox" name="blocked" id="blocked"
+                     {{#blocked}}checked="checked"{{/blocked}} />
+          </div>
+        </fieldset>
+     
+        <div class="btns">
+          <input type="submit" value="Finish Editing" class="btn confirm" />
+          <input type="button" name="delete" value="Delete" 
+                 class="btn delete" /> 
+        </div>
+      </form>
+      
+      <form action="#delete" id="deleteform">
+        <input type="hidden" name="_rev" value="{{_rev}}" />
+        <input type="hidden" name="_id" value="{{_id}}" />
+      </form>
+
+    </script>
 
   </body>
-
+  
   <script src="vendor/couchapp/loader.js"></script>
-  <script src="vendor/couchapp/jquery.pathbinder.js"></script>
-  <script src="./evently.init.js"></script>
+  <script src="./mustache.js"></script>
+  <script src="./utils.js"></script>
+  <script src="./focus.js"></script>
+  
+  <!-- <script src="vendor/couchapp/jquery.pathbinder.js"></script> -->
+  <!-- <script src="./evently.init.js"></script> -->
 
 </html>

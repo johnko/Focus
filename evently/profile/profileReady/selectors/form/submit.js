@@ -9,7 +9,7 @@ function() {
       state : f.state,
       type : "task"
   };
-  $$(form).app.db.saveDoc(doc, {
+    $$(form).app.db.saveDoc(doc, {
     success : function(r) {
       $("[name=message]", form).val("");
       Focus.notifyMsg('New item: </span><a href="#/details/' +
