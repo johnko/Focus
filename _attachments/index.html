@@ -95,16 +95,9 @@
               <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}"/>
               <span class="name">{{name}}</span>
               {{/profile}}
-            </div>
+              </div>
             <span class="state">
-              <a class="public">
-                <img src="./eye2.png" />
-              </a>
-              <!-- <select name="state"> -->
-              <!--   {{#states}} -->
-              <!--   <option value="{{state}}" {{selected}}>{{state}}</option> -->
-              <!--   {{/states}} -->
-              <!-- </select> -->
+              <a class="public"><img src="./eye2.png" /></a>
             </span>
             <div class="message">{{{message}}}</div>
           </div>
@@ -178,7 +171,7 @@
           <label for="blocked">Blocked</label>
           <div>
             <input type="checkbox" name="blocked" id="blocked"
-                     {{#blocked}}checked="checked"{{/blocked}} />
+                   {{#blocked}}checked="checked"{{/blocked}} />
           </div>
         </fieldset>
      
@@ -203,7 +196,4 @@
   <script src="./utils.js"></script>
   <script src="./focus.js"></script>
   
-  <!-- <script src="vendor/couchapp/jquery.pathbinder.js"></script> -->
-  <!-- <script src="./evently.init.js"></script> -->
-
 </html>
