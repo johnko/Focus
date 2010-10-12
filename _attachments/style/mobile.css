@@ -372,6 +372,11 @@ label.checkbox {
 #navigation { 
     overflow      : auto;    
     border-bottom : 1px solid #111;
+    background      : 
+    -webkit-gradient(linear, 0% 40%, 0% 70%, from(#4C5861), to(#384147));
+    background      :
+    -moz-linear-gradient(center top, #4C5861, #384147) 
+    repeat scroll 0 0 transparent;
 }
 #navigation li { 
     float : left;
