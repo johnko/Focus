@@ -1,5 +1,6 @@
 function(doc) {
-  if (doc.message && doc.created_at) {
+  if (doc.message && doc.created_at &&
+      (doc.state === "now" || doc.state === "later")) {
     var words = {};
     doc.message.replace(/\@([\w\-]+)/g, function(tag, word) {
       words[word.toLowerCase()] = true;
