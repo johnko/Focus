@@ -42,7 +42,7 @@ var Focus = (function () {
   });
     
   router.get("", function () {
-    window.location.hash = "#!";
+    router.go("#!");
   });
   router.get("!", function () {
     showUser("", user.userCtx.name);
@@ -105,7 +105,7 @@ var Focus = (function () {
     doc.edit_by = user.userCtx.name;
     db.saveDoc(doc, {
       success : function(r) {
-        window.location.hash = getRedirectUrl();
+        router.go(getRedirectUrl());
         notifyMsg("Updated");
       }
     });
@@ -113,6 +113,7 @@ var Focus = (function () {
   
   router.post("create", function(e) {
     var doc = {
+      created_by : user.userCtx.name,
       created_at : new Date(),
       profile    : getProfile(user.userCtx.name),
       publish    : true,
@@ -133,7 +134,7 @@ var Focus = (function () {
     db.removeDoc({_id: data._id, _rev: data._rev}, {
       success:function() {
         notifyMsg("deleted");
-        window.location.hash = getRedirectUrl();
+        router.go(getRedirectUrl());
       }
     });  
   });
@@ -153,6 +154,10 @@ var Focus = (function () {
   function createEdit(id) {
     $("body").addClass("editing");
     fetchId(id, function(data) {
+      data.edited = !!data.edit_at;
+      data.created = !!data.created_at;
+      data.created_at = prettyDate(new Date(data.created_at));
+      data.edit_at = data.edit_at && prettyDate(new Date(data.edit_at)) || "";
       data.users  = selectUsers(data.profile.name);
       data.states = states(data.state);
       render("#content", "#edit_tpl", data);
@@ -321,8 +326,6 @@ var Focus = (function () {
         (url.indexOf("focus") !== -1) ? "navall" : 
         (url.indexOf("team") !== -1)  ? "navteam" : 
         (url.indexOf("tags") !== -1)  ? "navtags" : "navmine";
-
-      
       
       $(".selected").removeClass("selected");
       if (selected) {
@@ -414,8 +417,7 @@ var Focus = (function () {
         ? $(e.target)
         : $(e.target).parents("div.item");
       if (e.target.nodeName !== "A" && item.length !== 0) {
-        document.location.hash =
-          document.location.hash + "/edit/" + item.attr("data-id");
+        router.go(document.location.hash + "/edit/" + item.attr("data-id"));
       } else if ($(e.target).is("input[name=delete]")) {
         $("#deleteform").submit();
       }

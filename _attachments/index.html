@@ -104,6 +104,7 @@
               {{/profile}}
               </div>
             <span class="state">
+              <span class="status">{{state}}</span>
               <a class="public"><img src="./eye2.png" /></a>
             </span>
             <div class="message">{{{message}}}</div>
@@ -134,6 +135,12 @@
     <script type="text/html" id="edit_tpl">
 
       <form action="#edit" id="editform">
+
+        <p class="details">
+          {{#created}}Created by {{created_by}}, {{created_at}}{{/created}}
+          <br />
+          {{#edited}}Last edited by {{edit_by}}, {{edit_at}}{{/edited}}
+        </p>
 
         <textarea name="message">{{{message}}}</textarea>
         <input type="hidden" name="_rev" value="{{_rev}}">

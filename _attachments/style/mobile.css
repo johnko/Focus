@@ -455,7 +455,7 @@ label.checkbox {
 }
 
 #content { 
-    margin : 10px 0px 20px 0px; 
+    margin : 0px 0px 20px 0px; 
 }
 
 #create { 
@@ -491,11 +491,25 @@ h3 #content {
 .now { 
     color:#222; 
 }
-
+.status {
+    margin-top:3px;
+    line-height:20px;
+    font-size:90%;
+    display:block;
+    width:60px;
+    height:20px;
+    color:#333;
+    font-weight:bold;
+    text-indent:20px;
+}
 .public { 
+    text-align:center;
+    width:20px;
+    height:35px;
+    overflow:hidden;
     display    : block; 
-    width      : 50px; 
-    margin-top : 10px;
+    width      : 60px; 
+    margin-top : 0px;
 }
 .public { 
     opacity:0.2;
@@ -504,8 +518,18 @@ h3 #content {
     opacity:0.6;
 }
 
-.isNotSelf .state { 
+.isNotSelf .public { 
     display:none; 
+}
+
+.now .status { 
+    background:url(../hammer.png) no-repeat;
+}
+.later .status { 
+    background:url(../ticket.png) no-repeat;
+}
+.done .status { 
+    background:url(../star.png) no-repeat;
 }
 
 .none { 
@@ -517,7 +541,8 @@ h3 #content {
     font-family : serif;
 }
 
-.profileheader { 
+.profileheader {
+    margin-top   : 10px;
     padding-left : 20px;
 }
 .profileheader h2 {
@@ -588,4 +613,12 @@ header, #footer {
 }
 .editing header { 
     display:none !important;
+}
+.details { 
+    font-size   : 80%;
+    font-style  : italic;
+    color       : #999;
+    margin      : 5px 0px;
+    text-align  : right;
+    font-family : serif;
 }
