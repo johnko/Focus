@@ -7,14 +7,33 @@ var Router = (function() {
   var PATH_REPLACER = "([^\/]+)",
       PATH_MATCHER  = /:([\w\d]+)/g,
       preRouterFur  = null,
+      fun404        = null,
       routes        = {GET: [], POST: []};
-
+    
+  // Needs namespaced and decoupled and stuff
+  function init() {
+    $(window).bind("hashchange", urlChanged).trigger("hashchange");
+    $(document).bind("submit", formSubmitted);
+  };
+  
   function get(path, cb) {
     route("GET", path, cb);
   };
   
   function post(path, cb) {
     route("POST", path, cb);
+  };
+
+  function refresh() {
+    urlChanged();
+  };
+
+  function preRouter(fun) {
+    preRouterFun = fun;
+  };
+
+  function error404(fun) {
+    fun404 = fun;
   };
   
   function route(verb, path, cb) {
@@ -28,7 +47,7 @@ var Router = (function() {
       callback : cb
     });
   };
-
+    
   function urlChanged() {
     trigger("GET", window.location.hash.slice(1));
     window.scrollTo(0,0);
@@ -59,7 +78,9 @@ var Router = (function() {
       }
       match.details.callback.apply(this, args);
     } else {
-      console.error("err, 404", verb, url);
+      if (fun404) {
+        fun404(verb, url);
+      }
     }
   };
 
@@ -89,28 +110,14 @@ var Router = (function() {
     });
     return o;
   };
-
-  // Needs namespaced and decoupled and stuff
-  function init() {
-    $(window).bind("hashchange", urlChanged).trigger("hashchange");
-    $(document).bind("submit", formSubmitted);
-  };
-
-  function refresh() {
-    urlChanged();
-  };
-
-  function preRouter(fun) {
-    preRouterFun = fun;
-  };
-  
+    
   return {
     get     : get,
     post    : post,
     init    : init,
     pre     : preRouter,
     refresh : refresh,
-    formSubmitted : formSubmitted
+    error404 : error404
   };
   
 });

@@ -424,7 +424,7 @@ label.checkbox {
     background            : white;
     margin                : 20px auto;
     padding               : 30px;
-    max-width             : 340px;
+    width                 : 220px;
     -moz-box-shadow       : 0px 0px 5px #333;
     -moz-border-radius    : 5px;
     -webkit-box-shadow    : 0px 0px 5px #333;
@@ -570,4 +570,7 @@ h3 #content {
 
 header, #footer { 
     display:none; 
+}
+.err404 { 
+    margin:0px 20px;
 }

@@ -12,7 +12,10 @@ var Focus = (function () {
   var selected = "selected='selected'";
   
   router.pre(urlChange);
-
+  router.error404(function (verb, url) {
+    render("#content", "#error404", {url:url});
+  });
+  
   // I can combine these all into the same clause, I just hate regex
   router.get("!/team/:name/edit/:id", function (name, id) {
     createEdit(id);
