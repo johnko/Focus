@@ -121,18 +121,24 @@ li .state {
     color      : #222; 
 }
 
-.now, .active {
+.later {
     background: -moz-linear-gradient(top, #C0CFE8 0%, #B1C9DD 100%);
     background: -webkit-gradient(linear, left top, left bottom, 
                                  color-stop(0%,#C0CFE8), 
                                  color-stop(100%,#B1C9DD));
 }
 
-.done {
+.now, .active {
     background: -moz-linear-gradient(top, #BEE5CC 0%, #B1DBCE 100%);
     background: -webkit-gradient(linear, left top, left bottom, 
                                  color-stop(0%,#BEE5CC), 
                                  color-stop(100%,#B1DBCE)); 
+}
+.done { 
+    background: -moz-linear-gradient(top, #FFF 0%, #EEE 100%);
+    background: -webkit-gradient(linear, left top, left bottom, 
+                                 color-stop(0%,#FFF), 
+                                 color-stop(100%,#EEE)); 
 }
 
 .blocked {
