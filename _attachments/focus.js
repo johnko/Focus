@@ -213,9 +213,10 @@ var Focus = (function () {
 
   function daysAgo(days) {
     var d = new Date();
+    //console.log(
     return new Date(
-      new Date((d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear()
-               - (24 * 60 * 60 * days * 1000)));
+      new Date((d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear())
+               - (24 * 60 * 60 * days * 1000));
   };
   
   function viewToList(data, isSelf) {
