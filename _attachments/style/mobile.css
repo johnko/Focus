@@ -567,3 +567,7 @@ h3 #content {
 #editform .first { 
     border-top:0px; 
 }
+
+header, #footer { 
+    display:none; 
+}

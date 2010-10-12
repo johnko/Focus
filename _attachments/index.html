@@ -8,18 +8,20 @@
 
   <body>
 
-    <ul id="navigation">
-      <li><a href="#!" class="navmine">Mine</a></li>
-      <li><a href="#!/team" class="navteam">Team</a></li>
-      <li><a href="#!/focus" class="navall">All</a></li>
-      <li><a href="#!/tags" class="navtags">Tags</a></li>
-    </ul>
-
-    <form id="create" class="clearfix" action="#create">
-      <input type="text" name="message" id="message" 
-             placeholder="What am I working on?" value="" />
-      <input type="submit" class="btn" id="createbtn" value="Create" />
-    </form>
+    <header>
+      <ul id="navigation">
+        <li><a href="#!" class="navmine">Mine</a></li>
+        <li><a href="#!/team" class="navteam">Team</a></li>
+        <li><a href="#!/focus" class="navall">All</a></li>
+        <li><a href="#!/tags" class="navtags">Tags</a></li>
+      </ul>
+      
+      <form id="create" class="clearfix" action="#create">
+        <input type="text" name="message" id="message" 
+               placeholder="What am I working on?" value="" />
+        <input type="submit" class="btn" id="createbtn" value="Create" />
+      </form>
+    </header>
 
     <div id="notify"></div>
 
@@ -51,7 +53,7 @@
 
     <script type="text/html" id="login_tpl">
       <form action="#login" id="mainlogin">
-        <h3>Login</h3>
+        <h3>Focus - Login</h3>
         
         <label for="name">
           <span>Name</span>

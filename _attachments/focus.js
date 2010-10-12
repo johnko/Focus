@@ -345,6 +345,7 @@ var Focus = (function () {
   function loadUser() {
     $.getJSON("/_session/", function (data) {
       if (data && data.userCtx && data.userCtx.name !== null) {
+        $("header, #footer").show();
         user = data;
         loadUsers(router.init);
       } else { 
