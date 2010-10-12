@@ -150,7 +150,8 @@ var Focus = (function () {
     setTimeout(function() { $("#notify").fadeOut(); }, 3000);    
   };
   
-  function createEdit(id) { 
+  function createEdit(id) {
+    $("body").addClass("editing");
     fetchId(id, function(data) {
       data.users  = selectUsers(data.profile.name);
       data.states = states(data.state);
@@ -311,6 +312,7 @@ var Focus = (function () {
 
     if (verb === "GET") {
 
+      $("body").removeClass("editing");
       $("#content").addClass("loading");
 
       // nasty way of figuring out what nav should be highlighted
@@ -318,7 +320,9 @@ var Focus = (function () {
       var selected = (url === "!/")   ? "navmine" :
         (url.indexOf("focus") !== -1) ? "navall" : 
         (url.indexOf("team") !== -1)  ? "navteam" : 
-        (url.indexOf("tags") !== -1)  ? "navtags" : "navmine"; 
+        (url.indexOf("tags") !== -1)  ? "navtags" : "navmine";
+
+      
       
       $(".selected").removeClass("selected");
       if (selected) {

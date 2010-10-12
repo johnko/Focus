@@ -329,6 +329,7 @@ input[type="submit"] {
 
 textarea[name="message"] { 
     width              : 100%;
+    height             : 60px;
     margin-bottom      : 10px;
     -webkit-box-sizing : border-box;
     -moz-box-sizing    : border-box;
@@ -527,7 +528,6 @@ h3 #content {
 #editform label { 
     line-height : 50px;
     float       : left;
-    width       : 50%;
     font-weight : bold;
 }
 
@@ -551,10 +551,15 @@ h3 #content {
     text-align:center;
 }
 #editform .btn {
+    margin:0px;
     width:45%;
     -webkit-box-sizing : border-box;
     -moz-box-sizing    : border-box;
 }
+#editform .btn:first-child {
+    margin-right:5%;
+}
+
 
 .gravatar { 
     width  : 40px; 
@@ -573,4 +578,7 @@ header, #footer {
 }
 .err404 { 
     margin:0px 20px;
+}
+.editing header { 
+    display:none !important;
 }
