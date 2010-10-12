@@ -389,7 +389,7 @@ var Focus = (function () {
           docCache = {};
           // Bit of a hack, dont refresh the form while people are editing
           if (window.location.hash.indexOf("/edit/") === -1) {
-            router.refresh();
+            router.refresh(true);
           }
           badComet(data.last_seq);
         }
@@ -427,10 +427,14 @@ var Focus = (function () {
   };
   
   loadUser();
-  setTimeout(initComet, 500);
-  bindEvents();
 
-  // Scroll past the url bar
-  setTimeout(function () { $('html, body').animate({scrollTop: 1}); }, 200);
+  window.onload = function () {
+    setTimeout(function () {
+      initComet();
+      // Scroll past the url bar
+      //setTimeout(function () { $('html, body').animate({scrollTop: 1}); }, 200);
+    }, 1000);
+  };
+  bindEvents();
   
 })();

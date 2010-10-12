@@ -24,8 +24,8 @@ var Router = (function() {
     route("POST", path, cb);
   };
 
-  function refresh() {
-    urlChanged();
+  function refresh(maintainScroll) {
+    urlChanged(maintainScroll);
   };
 
   function preRouter(fun) {
@@ -48,9 +48,11 @@ var Router = (function() {
     });
   };
     
-  function urlChanged() {
+  function urlChanged(maintainScroll) {
     trigger("GET", window.location.hash.slice(1));
-    window.scrollTo(0,0);
+    if (!maintainScroll) { 
+      window.scrollTo(0,0);
+    }
   };
   
   function formSubmitted(e) {
