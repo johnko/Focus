@@ -304,6 +304,7 @@ var Focus = (function () {
         url = "/" + dbName + "/_design/focus/_view/" + view;
     
     if (typeof xhrCache[id] === "undefined") {
+      opts.random = new Date().getTime();
       $.get(url, opts, function (data) {
         xhrCache[id] = data;
         callback(cloneObj(xhrCache[id]));
@@ -427,16 +428,15 @@ var Focus = (function () {
       $("#avapreview").attr("src", getProfile($(e.target).val()).gravatar_url);
     });
   };
-  
-  loadUser();
 
   window.onload = function () {
-    setTimeout(function () {
-      initComet();
-      // Scroll past the url bar
-      //setTimeout(function () { $('html, body').animate({scrollTop: 1}); }, 200);
-    }, 1000);
+      setTimeout(function () {
+          //$('html, body').animate({scrollTop: 1});
+          loadUser();
+          initComet();
+      }, 500);
   };
+    
   bindEvents();
-  
+
 })();
