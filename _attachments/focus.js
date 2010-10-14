@@ -418,7 +418,10 @@ var Focus = (function () {
         ? $(e.target)
         : $(e.target).parents("div.item");
       if (e.target.nodeName !== "A" && item.length !== 0) {
-        router.go(document.location.hash + "/edit/" + item.attr("data-id"));
+        item.addClass("selected");
+        setTimeout(function () { 
+          router.go(document.location.hash + "/edit/" + item.attr("data-id"));
+        }, 500);
       } else if ($(e.target).is("input[name=delete]")) {
         $("#deleteform").submit();
       }
