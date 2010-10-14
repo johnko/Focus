@@ -245,6 +245,7 @@ select {
     height    : 30px;
     font-size : 90%;
     padding   : 4px;
+    z-index   : 300;
 }
 
 .clearfix:after {
@@ -473,6 +474,7 @@ label.checkbox {
     min-height : 40px;
     overflow   : auto;
     outline    : none;
+    z-index    : 200;
 }
 #editform { 
     padding:0px 10px;
