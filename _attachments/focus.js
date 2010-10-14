@@ -370,14 +370,20 @@ var Focus = (function () {
       for (var keys = [], i = 0; i < users.rows.length; i += 1) {
         keys.push(users.rows[i].value);
       }
-      var url  = "/" + dbName + "/_all_docs?include_docs=true",
-          args = JSON.stringify({keys:keys});
-      $.post(url, args, function(data) {
-        for (i = 0; i < data.rows.length; i += 1) {
-          profiles.push(data.rows[i].doc);
+      
+      $.ajax({
+        type        : "POST",
+        url         : "/" + dbName + "/_all_docs?include_docs=true",
+        contentType : "application/json",
+        dataType    : "json",
+        data        : JSON.stringify({keys:keys}),
+        success     : function(data) {
+          for (i = 0; i < data.rows.length; i += 1) {
+            profiles.push(data.rows[i].doc);
+          }
+          callback();
         }
-        callback();
-      }, "json");
+      });      
     });
   };  
   
