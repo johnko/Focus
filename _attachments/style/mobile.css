@@ -105,7 +105,20 @@ li .state {
     padding : 5px;
 }
 .details {
+    float:right;
     padding : 4px;
+}
+
+#editheader { 
+    overflow:auto;
+    height:45px;
+}
+.btn.back { 
+    display:block;
+    margin:10px 0px;
+    float:left;
+    font-size:90%;
+    padding:4px;
 }
 
 #profile .item {
@@ -598,17 +611,16 @@ fieldset div {
     vertical-align : middle;
 }
 
-
 #editform .btns { 
     text-align:center;
 }
-#editform .btn {
+.btns .btn {
     margin:0px;
     width:45%;
     -webkit-box-sizing : border-box;
     -moz-box-sizing    : border-box;
 }
-#editform .btn:first-child {
+.btns .btn:first-child {
     margin-right:5%;
 }
 
