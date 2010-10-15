@@ -575,20 +575,22 @@ h3 #content {
     background : url(../loading.gif) no-repeat center center;
 }
 
-#editform label { 
+label { 
     line-height : 50px;
     float       : left;
     font-weight : bold;
 }
-
-#editform fieldset { 
+#syncform { 
+    padding:0px 10px; 
+}
+fieldset { 
     border-bottom : 1px solid #AAA;
     border-top    : 1px solid #FFF;
     overflow      : auto;
     margin        : 0px;
 }
 
-#editform div { 
+fieldset div { 
     text-align  : right;
     line-height : 50px;
 }
@@ -615,10 +617,10 @@ h3 #content {
     height : 40px; 
 }
 
-#editform .last { 
+.last { 
     border-bottom:0px; 
 }
-#editform .first { 
+.first { 
     border-top:0px; 
 }
 
@@ -638,4 +640,16 @@ header, #footer {
     margin      : 5px 0px;
     text-align  : right;
     font-family : serif;
+}
+
+#syncbtn { 
+    width:100%;
+    display:block;
+}
+
+.syncstatus { 
+    text-indent:30px;
+    padding:10px;
+    margin:10px;
+    display:block;
 }

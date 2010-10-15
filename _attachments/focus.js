@@ -48,6 +48,12 @@ var Focus = (function () {
     showUser("", user.userCtx.name);
   });
 
+  router.get("!/sync", function () {
+    var details = JSON.parse(localStorage.syncDetails || "{}");
+    details.status = "Press to Restart";
+    render("#content", "#sync_tpl", details);
+  });
+  
   router.get("!/team/:name", function (name) {
     showUser("/team/"+name, name);
   });
@@ -128,6 +134,11 @@ var Focus = (function () {
         notifyMsg("Added new item");
       }
     });
+  });
+
+  router.post("sync", function (e, data) {
+    var details = {"user":data};
+    localStorage.syncDetails = JSON.stringify(details);
   });
   
   router.post("delete", function (e, data) {
@@ -427,7 +438,7 @@ var Focus = (function () {
         item.addClass("selected");
         setTimeout(function () { 
           router.go(document.location.hash + "/edit/" + item.attr("data-id"));
-        }, 500);
+        }, 200);
       } else if ($(e.target).is("input[name=delete]")) {
         $("#deleteform").submit();
       }
