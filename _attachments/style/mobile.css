@@ -184,9 +184,6 @@ li .state {
 
 .ava img {
     display    : block;
-    width      : 40px;
-    background : #666;
-    height     : 40px;
     margin     : 0px auto;
 }
 
@@ -588,25 +585,33 @@ h3 #content {
     background : url(../loading.gif) no-repeat center center;
 }
 
-label { 
+.mainform label { 
     line-height : 50px;
+    height:50px;
     float       : left;
     font-weight : bold;
+    width:100%;
+    position:relative;
+    display:block;
+}
+.first select { 
+    position:relative;
+    top:-15px;
+}
+.mainform label span {
+    display:block;
+    float:right;
 }
 #syncform { 
     padding:0px 10px; 
 }
-fieldset { 
+.mainform fieldset { 
     border-bottom : 1px solid #AAA;
     border-top    : 1px solid #FFF;
     overflow      : auto;
     margin        : 0px;
 }
 
-fieldset div { 
-    text-align  : right;
-    line-height : 50px;
-}
 #editform div img {
     vertical-align : middle;
 }
@@ -625,14 +630,14 @@ fieldset div {
 }
 
 .gravatar { 
-    width  : 40px; 
-    height : 40px; 
+    width  : 39px; 
+    height : 39px; 
 }
 
-.last { 
+.mainform .last { 
     border-bottom:0px; 
 }
-.first { 
+.mainform .first { 
     border-top:0px; 
 }
 
