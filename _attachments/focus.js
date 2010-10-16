@@ -237,6 +237,7 @@ var Focus = (function () {
       obj.states    = states(obj.state);
       obj.message   = linkUp(obj.message);
       obj.published = obj.publish ? "published" : "unpublished";
+      obj.blocked   = obj.blocked ? "blocked" : "";
       obj.isSelf    = isSelf ? "isSelf" : "isNotSelf";
       
       if (isSelf || (!isSelf && obj.publish)) {
