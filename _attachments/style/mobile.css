@@ -110,7 +110,6 @@ li .state {
 }
 
 #editheader { 
-    overflow:auto;
     height:45px;
 }
 .btn.back { 
