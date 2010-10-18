@@ -1,6 +1,7 @@
 var Focus = (function () {
 
-  var dbName   = "focus",
+  var dbName    = "focus",
+      urlPrefix = "/",
       router   = new Router(),
       user     = null,
       profiles = [],
@@ -301,7 +302,7 @@ var Focus = (function () {
 
   function fetchId(id, callback) {
     if (typeof docCache[id] === "undefined") {
-      $.getJSON("/"+dbName+"/"+id, function (data) {
+      $.getJSON(urlPrefix + dbName + "/" + id, function (data) {
         docCache[id] = data;
         callback(cloneObj(docCache[id]));
       });
@@ -313,7 +314,7 @@ var Focus = (function () {
   function fetch(view, opts, callback) {
 
     var id = view + JSON.stringify(opts),
-        url = "/" + dbName + "/_design/focus/_view/" + view;
+        url = urlPrefix + dbName + "/_design/focus/_view/" + view;
     
     if (typeof xhrCache[id] === "undefined") {
       opts.random = new Date().getTime();
@@ -366,7 +367,7 @@ var Focus = (function () {
   };
   
   function loadUser() {
-    $.getJSON("/_session/", function (data) {
+    $.getJSON(urlPrefix + "_session/", function (data) {
       if (data && data.userCtx && data.userCtx.name !== null) {
         $("header, #footer").show();
         user = data;
@@ -385,7 +386,7 @@ var Focus = (function () {
       
       $.ajax({
         type        : "POST",
-        url         : "/" + dbName + "/_all_docs?include_docs=true",
+        url         : urlPrefix + dbName + "/_all_docs?include_docs=true",
         contentType : "application/json",
         dataType    : "json",
         data        : JSON.stringify({keys:keys}),
@@ -401,7 +402,7 @@ var Focus = (function () {
   
   function badComet(seq) {
     $.ajax({
-      url      : "/" + dbName + "/_changes",
+      url      : urlPrefix + dbName + "/_changes",
       data     : {heartbeat: 10000, feed:"longpoll", since: seq},
       method   : "GET",
       dataType : "json",
