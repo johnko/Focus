@@ -331,7 +331,7 @@ var Focus = (function () {
     if (verb === "GET") {
 
       $("body").removeClass("editing");
-      $("#content").addClass("loading");
+      $("#content").empty().addClass("loading");
 
       // nasty way of figuring out what nav should be highlighted
       // can do a nicer way
