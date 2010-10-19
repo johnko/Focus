@@ -280,7 +280,7 @@ select {
     display  : none;
 }
 
-input[type="submit"] {
+input[type="submit"], button {
     padding         : 5px 5px; 
     background      : 
     -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
@@ -661,11 +661,32 @@ header, #footer {
 #syncbtn { 
     width:100%;
     display:block;
+} 
+
+.startsync { 
+    padding:10px;
 }
 
 .syncstatus { 
-    text-indent:30px;
-    padding:10px;
-    margin:10px;
+    width:100%;
+    text-align:left;
     display:block;
+    -webkit-box-sizing : border-box;
+    -moz-box-sizing    : border-box;
+}
+
+.syncstatus { 
+    outline:none;
+}
+.syncstatus div { 
+    text-indent:30px;
+}
+.syncstatus.working div { 
+    background: url(../loadingsmall.gif) no-repeat 5px center !important;
+}
+.paused div { 
+    background: url(../control-pause.png) no-repeat 5px center !important;
+}
+.running div { 
+    background: url(../tick.png) no-repeat 5px center !important;
 }

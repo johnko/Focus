@@ -34,7 +34,11 @@
 
     <script type="text/html" id="sync_tpl">
       
-      <a class="syncstatus btn">{{status}}</a>
+      <form action="{{action}}" class="startsync">
+        <button type="submit" {{disabled}} class="syncstatus {{cssClass}}">
+          <div class="statusicon">{{status}}</div>
+        </button>
+      </form>
       
       {{#user}}
       <form action="#sync" id="syncform" class="mainform">
@@ -47,13 +51,13 @@
         <fieldset>
           <label>Workgroup
           <span><input type="text" name="workgroup" value="{{workgroup}}"
-                      placeholder="example.com" /></span>
+                      placeholder="mywork" /></span>
           </label>
         </fieldset>
         <fieldset>
-          <label>User Name>
+          <label>User Name
           <span><input type="text" name="name" value="{{name}}"
-                      placeholder="example.com" /></span>
+                      placeholder="johndoe" /></span>
           </label>
         </fieldset>
         <fieldset class="last">
@@ -221,7 +225,7 @@
                 {{/states}}
               </select>
             </span>
-</label>
+          </label>
         </fieldset>
 
         <fieldset>

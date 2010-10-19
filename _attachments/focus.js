@@ -2,10 +2,10 @@ var Focus = (function () {
 
   var dbName    = "focus",
       urlPrefix = "/",
-      router   = new Router(),
-      user     = null,
-      profiles = [],
-      db       = $.couch.db(dbName);
+      router    = new Router(),
+      user      = null,
+      profiles  = [],
+      db        = $.couch.db(dbName);
 
   var xhrCache = {},
       docCache = {};
@@ -14,7 +14,11 @@ var Focus = (function () {
   
   router.pre(urlChange);
   router.error404(function (verb, url) {
-    render("#content", "#error404", {url:url});
+    if (verb === "GET") { 
+      render("#content", "#error404", {url:url});
+    } else {
+      console.error(verb, url);
+    }
   });
   
   // I can combine these all into the same clause, I just hate regex
@@ -50,9 +54,31 @@ var Focus = (function () {
   });
 
   router.get("!/sync", function () {
-    var details = JSON.parse(localStorage.syncDetails || "{}");
-    details.status = "Press to Restart";
-    render("#content", "#sync_tpl", details);
+    
+    var details = false; //getSyncDetails();
+    
+    if (!details) {
+      render("#content", "#sync_tpl", {
+        disabled : "disabled='disabled'",
+        action   : "#restartsync",
+        status   : "Not Configured",
+        user     : {}
+      });
+    } else { 
+      $.getJSON(urlPrefix + "_active_tasks", function(data) {
+        if (data.length !== 0) { // Check the replications are for this instance
+          details.action = "#pausesync";
+          details.cssClass = "running";
+          details.status = "Running, Press to pause";
+          render("#content", "#sync_tpl", details);
+        } else {
+          details.action = "#restartsync";
+          details.cssClass = "paused";
+          details.status = "Paused, Press to restart";
+          render("#content", "#sync_tpl", details);
+        }
+      });      
+    }
   });
   
   router.get("!/team/:name", function (name) {
@@ -137,6 +163,33 @@ var Focus = (function () {
     });
   });
 
+  router.post("restartsync", function () {
+
+    $(".syncstatus").addClass("working").val("Starting...");
+    
+    var u   = getSyncDetails().user,
+        rem = "http://" + u.name + ":" + u.password + "@" + u.server + "/" + u.workgroup;
+    
+    postSync({source:rem, target:u.workgroup, continuous:true}, function(d1) {
+      postSync({source:u.workgroup, target:rem, continuous:true}, function(d2) {
+        router.refresh();
+        //console.log(d1, d2);
+      });
+    });
+
+  });
+
+  router.post("pausesync", function() {
+    
+    var u   = getSyncDetails().user,
+        rem = "http://" + u.name + ":" + u.password + "@" + u.server + "/" + u.workgroup;
+    postSync({source:rem, target:u.workgroup, continuous:true, cancel:true}, function(d1) {
+      postSync({source:u.workgroup, target:rem, continuous:true, cancel:true}, function(d2) {
+        router.refresh();
+      });
+    });
+  });
+  
   router.post("sync", function (e, data) {
     var details = {"user":data};
     localStorage.syncDetails = JSON.stringify(details);
@@ -150,6 +203,27 @@ var Focus = (function () {
       }
     });  
   });
+
+  function syncStatus(details, data) {
+    
+  };
+  
+  function postSync(obj, callback) { 
+    $.ajax({
+      type        : "POST",
+      url         : urlPrefix + "_replicate",
+      contentType : "application/json",
+      dataType    : "json",
+      data        : JSON.stringify(obj),
+      success     : function(data) {
+        callback(data);
+      }
+    });
+  };
+  
+  function getSyncDetails() {
+    return JSON.parse(localStorage.syncDetails || false);
+  };
   
   function getRedirectUrl() {
     var arr = window.location.hash.split("/");
@@ -166,12 +240,12 @@ var Focus = (function () {
   function createEdit(id) {
     $("body").addClass("editing");
     fetchId(id, function(data) {
-      data.edited = !!data.edit_at;
-      data.created = !!data.created_at;
+      data.edited     = !!data.edit_at;
+      data.created    = !!data.created_at;
       data.created_at = prettyDate(new Date(data.created_at));
-      data.edit_at = data.edit_at && prettyDate(new Date(data.edit_at)) || "";
-      data.users  = selectUsers(data.profile.name);
-      data.states = states(data.state);
+      data.edit_at    = data.edit_at && prettyDate(new Date(data.edit_at))||"";
+      data.users      = selectUsers(data.profile.name);
+      data.states     = states(data.state);
       render("#content", "#edit_tpl", data);
       $("textarea[name=message]")[0].focus();
     });
@@ -437,10 +511,10 @@ var Focus = (function () {
         ? $(e.target)
         : $(e.target).parents("div.item");
       if (e.target.nodeName !== "A" && item.length !== 0) {
-        item.addClass("selected");
-        setTimeout(function () { 
+        //item.addClass("selected");
+        //setTimeout(function () { 
           router.go(document.location.hash + "/edit/" + item.attr("data-id"));
-        }, 200);
+        //}, 200);
       } else if ($(e.target).is("input[name=delete]")) {
         $("#deleteform").submit();
       }
@@ -453,7 +527,6 @@ var Focus = (function () {
 
   window.onload = function () {
       setTimeout(function () {
-          //$('html, body').animate({scrollTop: 1});
           loadUser();
           initComet();
       }, 500);
