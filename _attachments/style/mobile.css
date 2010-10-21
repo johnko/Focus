@@ -658,7 +658,7 @@ header, #footer {
     font-family : serif;
 }
 
-#syncbtn { 
+.fullbtn { 
     width:100%;
     display:block;
 } 
@@ -689,4 +689,7 @@ header, #footer {
 }
 .running div { 
     background: url(../tick.png) no-repeat 5px center !important;
+}
+.paddedform { 
+    padding: 0px 10px;
 }

@@ -1,12 +1,12 @@
 var Focus = (function () {
 
-  var dbName    = "focus",
+  var dbName    = null,
       urlPrefix = "/",
       router    = new Router(),
       user      = null,
       profiles  = [],
-      db        = $.couch.db(dbName);
-
+      db        = null;
+  
   var xhrCache = {},
       docCache = {};
 
@@ -173,10 +173,34 @@ var Focus = (function () {
     });
   });
 
-  router.post("restartsync", function () {
 
-    $(".syncstatus").addClass("working").val("Starting...");
+  router.post("select_workgroup", function (e, data) {
+    var workgroup = "focus-"+ data.workgroup,
+        users     = $.couch.db("_users");
     
+    users.openDoc("org.couchdb.user:" + user.userCtx.name, {
+      success : function(userObj) {
+        
+        userObj.apps = userObj.apps || {};
+        userObj.apps.focus = userObj.apps.focus || {
+          workGroups        : [],
+          selectedWorkGroup : null
+        };
+        
+        userObj.apps.focus.selectedWorkGroup = workgroup;
+        userObj.apps.focus.workGroups.push(workgroup);
+
+        users.saveDoc(userObj, {
+          success: function() {
+            window.location.reload(true);
+          }
+        });
+      }
+    });
+  });
+  
+  router.post("restartsync", function () {
+    $(".syncstatus").addClass("working").val("Starting ...");
     var u   = getSyncDetails().user,
         rem = "http://" + u.name + ":" + u.password + "@" + u.server + "/" + u.workgroup;
     
@@ -190,7 +214,7 @@ var Focus = (function () {
   });
 
   router.post("pausesync", function() {
-    
+    $(".syncstatus").addClass("working").val("Pausing ...");
     var u   = getSyncDetails().user,
         rem = "http://" + u.name + ":" + u.password + "@" + u.server + "/" + u.workgroup;
     postSync({source:rem, target:u.workgroup, continuous:true, cancel:true}, function(d1) {
@@ -425,8 +449,8 @@ var Focus = (function () {
     if (verb === "GET") {
 
       $("body").removeClass("editing");
-      $("#content").empty().addClass("loading");
-
+      $("#content").addClass("loading");
+        
       // nasty way of figuring out what nav should be highlighted
       // can do a nicer way
       var selected = (url === "!/")   ? "navmine" :
@@ -438,7 +462,13 @@ var Focus = (function () {
       if (selected) {
         $("." + selected).addClass("selected");
       }
+      
+      if (dbName === null) {
+        render("#content", "#select_workgroup");
+        return false;
+      }  
     }
+    
     return ensureLoggedIn(verb, url, args);
   };
   
@@ -461,12 +491,23 @@ var Focus = (function () {
   
   function loadUser() {
     $.getJSON(urlPrefix + "_session/", function (data) {
+
       if (data && data.userCtx && data.userCtx.name !== null) {
-        $("header, #footer").show();
+        
         user = data;
-        loadUsers(router.init);
-      } else { 
-        router.init();
+        var users = $.couch.db("_users");
+        $("header, #footer").show();
+        
+        users.openDoc("org.couchdb.user:" + user.userCtx.name, {
+          success: function (userObj) { 
+            if (userObj && userObj.apps && userObj.apps.focus) {
+              dbName = userObj.apps.focus.selectedWorkGroup;
+              db = $.couch.db(dbName);
+              loadUsers(router.init);
+              initComet();
+            }
+          }
+        });
       }
     });
   };
@@ -530,10 +571,7 @@ var Focus = (function () {
         ? $(e.target)
         : $(e.target).parents("div.item");
       if (e.target.nodeName !== "A" && item.length !== 0) {
-        //item.addClass("selected");
-        //setTimeout(function () { 
-          router.go(document.location.hash + "/edit/" + item.attr("data-id"));
-        //}, 200);
+        router.go(document.location.hash + "/edit/" + item.attr("data-id"));
       } else if ($(e.target).is("input[name=delete]")) {
         $("#deleteform").submit();
       }
@@ -543,12 +581,9 @@ var Focus = (function () {
       $("#avapreview").attr("src", getProfile($(e.target).val()).gravatar_url);
     });
   };
-
+  
   window.onload = function () {
-      setTimeout(function () {
-          loadUser();
-          initComet();
-      }, 500);
+    setTimeout(loadUser, 500);
   };
     
   bindEvents();
