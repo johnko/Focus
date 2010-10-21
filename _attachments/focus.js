@@ -463,13 +463,15 @@ var Focus = (function () {
         $("." + selected).addClass("selected");
       }
       
-      if (dbName === null) {
+      if (ensureLoggedIn(verb, url, args) && dbName === null) {
         render("#content", "#select_workgroup");
-        return false;
-      }  
+        return false;        
+      } else {
+        return true;
+      }
+    } else {
+      return ensureLoggedIn(verb, url, args);
     }
-    
-    return ensureLoggedIn(verb, url, args);
   };
   
   function ensureLoggedIn(verb, url, args) {
@@ -505,9 +507,13 @@ var Focus = (function () {
               db = $.couch.db(dbName);
               loadUsers(router.init);
               initComet();
+            } else {
+              router.init();
             }
           }
         });
+      } else {
+        router.init();
       }
     });
   };
