@@ -55,27 +55,37 @@ var Focus = (function () {
 
   router.get("!/sync", function () {
     
-    var details = false; //getSyncDetails();
-    
-    if (!details) {
+    var details = getSyncDetails();
+    if (isEmpty(details)) {
       render("#content", "#sync_tpl", {
         disabled : "disabled='disabled'",
         action   : "#restartsync",
         status   : "Not Configured",
         user     : {}
       });
-    } else { 
-      $.getJSON(urlPrefix + "_active_tasks", function(data) {
-        if (data.length !== 0) { // Check the replications are for this instance
-          details.action = "#pausesync";
-          details.cssClass = "running";
-          details.status = "Running, Press to pause";
-          render("#content", "#sync_tpl", details);
-        } else {
-          details.action = "#restartsync";
-          details.cssClass = "paused";
-          details.status = "Paused, Press to restart";
-          render("#content", "#sync_tpl", details);
+    } else {
+      $.ajax({
+        type: "GET",
+        url: urlPrefix + "_active_tasks",
+        contentType : "application/json",
+        dataType: 'json',
+        data: {},
+        error: function(xhr, text, error) {
+          console.error(arguments);
+        },
+        success: function(data) {
+          if (data.length !== 0) {
+            // Check the replications are for this instance
+            details.action = "#pausesync";
+            details.cssClass = "running";
+            details.status = "Running, Press to pause";
+            render("#content", "#sync_tpl", details);
+          } else {
+            details.action = "#restartsync";
+            details.cssClass = "paused";
+            details.status = "Paused, Press to restart";
+            render("#content", "#sync_tpl", details);
+          }
         }
       });      
     }
@@ -222,7 +232,7 @@ var Focus = (function () {
   };
   
   function getSyncDetails() {
-    return JSON.parse(localStorage.syncDetails || false);
+    return JSON.parse(localStorage && localStorage.syncDetails || "{}");
   };
   
   function getRedirectUrl() {
@@ -297,6 +307,15 @@ var Focus = (function () {
     fetch("focus-user-state-created", args, cb);
   };
 
+  function isEmpty(obj) {
+    for(var prop in obj) {
+      if(obj.hasOwnProperty(prop))
+        return false;
+    }
+    
+    return true;
+  };
+  
   function daysAgo(days) {
     var d = new Date();
     return new Date(
