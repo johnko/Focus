@@ -4,6 +4,7 @@ var Focus = (function () {
       urlPrefix = "/",
       router    = new Router(),
       user      = null,
+      userDoc   = null,
       profiles  = [],
       db        = null;
   
@@ -95,6 +96,13 @@ var Focus = (function () {
     showUser("/team/"+name, name);
   });
 
+  router.get("!/signup", function () {
+    render("#content", "#signup");
+  });
+  router.get("!/login", function () {
+    render("#content", "#login_tpl");
+  });
+
   router.get("!/team", function () {
     render("#content", "#users_tpl", {users:profiles});
   });
@@ -130,7 +138,7 @@ var Focus = (function () {
   
   router.post("login", function (e, data) {
     $.couch.login({
-      name     : data.name,
+      name     : data.email,
       password : data.password,
       success  : function() { window.location.reload(true); },
       error    : function() { notifyMsg("Invalid Login Credentials"); }
@@ -158,7 +166,7 @@ var Focus = (function () {
     var doc = {
       created_by : user.userCtx.name,
       created_at : new Date(),
-      profile    : getProfile(user.userCtx.name),
+      profile    : userDoc["couch.app.profile"],
       publish    : true,
       message    : $("#message").val(),
       state      : "now",
@@ -175,22 +183,10 @@ var Focus = (function () {
 
 
   router.post("select_workgroup", function (e, data) {
-    var workgroup = "focus-"+ data.workgroup,
-        users     = $.couch.db("_users");
-    
+    var users = $.couch.db("_users");
     users.openDoc("org.couchdb.user:" + user.userCtx.name, {
       success : function(userObj) {
-        
-        userObj.apps = userObj.apps || {};
-        userObj.apps.focus = userObj.apps.focus || {
-          workGroups        : [],
-          selectedWorkGroup : null
-        };
-        
-        userObj.apps.focus.selectedWorkGroup = workgroup;
-        userObj.apps.focus.workGroups.push(workgroup);
-
-        users.saveDoc(userObj, {
+        users.saveDoc(setWorkGroup(userObj, "focus-"+ data.workgroup), {
           success: function() {
             window.location.reload(true);
           }
@@ -207,7 +203,6 @@ var Focus = (function () {
     postSync({source:rem, target:u.workgroup, continuous:true}, function(d1) {
       postSync({source:u.workgroup, target:rem, continuous:true}, function(d2) {
         router.refresh();
-        //console.log(d1, d2);
       });
     });
 
@@ -238,6 +233,41 @@ var Focus = (function () {
     });  
   });
 
+  router.post("signup", function (e, data) {
+
+    var user = {
+      name:data.email,
+      "couch.app.profile" : {
+        rand         : Math.random().toString(),
+        email        : data.email,
+        nickname     : data.name,
+        gravatar_url : 'http://www.gravatar.com/avatar/' +
+          hex_md5(data.email) + '.jpg?s=40&d=identicon'
+      }
+    };
+
+    user = setWorkGroup(user, "focus-"+ data.workgroup);
+    
+    $.couch.signup(user, data.password, {
+      success: function() {
+        window.location.reload(true);
+      }
+    });
+  });          
+  
+  function setWorkGroup(obj, workgroup) {
+    obj.apps = obj.apps || {};
+    obj.apps.focus = obj.apps.focus || {
+      workGroups        : [],
+      selectedWorkGroup : null
+    };
+    
+    obj.apps.focus.selectedWorkGroup = workgroup;
+    obj.apps.focus.workGroups.push(workgroup);
+
+    return obj;
+  };
+  
   function syncStatus(details, data) {
     
   };
@@ -268,7 +298,7 @@ var Focus = (function () {
   
   function notifyMsg(msg) {
     $("#notify").html('<span/>').html(msg).show();
-    setTimeout(function() { $("#notify").fadeOut(); }, 3000);    
+    setTimeout(function() { $("#notify").fadeOut(); }, 500);    
   };
   
   function createEdit(id) {
@@ -351,7 +381,6 @@ var Focus = (function () {
     for (var obj, tmp = [], i = 0; i < data.rows.length; i += 1) {
       obj = data.rows[i].value;
       docCache[obj._id] = cloneObj(obj);
-      
       obj.states    = states(obj.state);
       obj.message   = linkUp(obj.message);
       obj.published = obj.publish ? "published" : "unpublished";
@@ -462,20 +491,23 @@ var Focus = (function () {
       if (selected) {
         $("." + selected).addClass("selected");
       }
-      
-      if (ensureLoggedIn(verb, url, args) && dbName === null) {
-        render("#content", "#select_workgroup");
-        return false;        
-      } else {
-        return true;
+
+      if(!ensureLoggedIn(verb, url, args)) {
+        return false;
+      } else { 
+        if (url !== "!/signup" && dbName === null) {
+          render("#content", "#select_workgroup");
+          return false;
+        }
       }
+      return true;
     } else {
       return ensureLoggedIn(verb, url, args);
     }
   };
   
   function ensureLoggedIn(verb, url, args) {
-    if (verb === 'GET' && user === null) {
+    if (verb === 'GET' && user === null && url !== "!/signup") {
       render("#content", "#login_tpl");
       return false;
     }
@@ -501,8 +533,11 @@ var Focus = (function () {
         $("header, #footer").show();
         
         users.openDoc("org.couchdb.user:" + user.userCtx.name, {
-          success: function (userObj) { 
-            if (userObj && userObj.apps && userObj.apps.focus) {
+          success: function (userObj) {
+
+            userDoc = userObj;
+            
+            if (userObj.apps && userObj.apps.focus) {
               dbName = userObj.apps.focus.selectedWorkGroup;
               db = $.couch.db(dbName);
               loadUsers(router.init);
@@ -586,6 +621,15 @@ var Focus = (function () {
     $(document).bind("change", function(e) {
       $("#avapreview").attr("src", getProfile($(e.target).val()).gravatar_url);
     });
+
+    $("input").live("blur", function (e) {
+      if ($(e.target).attr("id") === "gravatar_entry") {
+        $("#gravatar_preview")
+          .attr("src", 'http://www.gravatar.com/avatar/'
+                + hex_md5($(e.target).val()) + '.jpg?s=40&d=identicon');
+      }
+    });
+
   };
   
   window.onload = function () {

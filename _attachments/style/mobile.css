@@ -29,7 +29,7 @@ input[name="name"] {
     background : #EEE;
     padding    : 10px;
 }
-input[type="text"], input[type="password"] { 
+input[type="text"], input[type="email"], input[type="password"] { 
     padding   : 2px;
     font-size : 90%;
     border    : 1px solid #999;
@@ -453,7 +453,8 @@ label.checkbox {
     border-top : 1px solid #AAA;
 }
 
-#mainlogin {
+.modalform {
+    position              : relative;
     background            : white;
     margin                : 20px auto;
     padding               : 30px;
@@ -464,17 +465,17 @@ label.checkbox {
     -webkit-border-radius : 5px;
 }
 
-#mainlogin label span {
+.modalform label span {
     font-size : 80%;
     display   : block;
     color     : #999;
 }
 
-#mainlogin label {
+.modalform label {
     display       : block;
     margin-bottom : 20px;
 }
-#mainlogin label input { 
+.modalform label input { 
     display : block;
     width   : 100%;
 }
@@ -692,4 +693,10 @@ header, #footer {
 }
 .paddedform { 
     padding: 0px 10px;
+}
+
+#gravatar_preview { 
+    position:absolute;
+    top:15px; 
+    right:25px;
 }

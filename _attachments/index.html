@@ -93,24 +93,54 @@
     </script>
 
     <script type="text/html" id="login_tpl">
-      <form action="#login" id="mainlogin">
+      <form action="#login" class="modalform">
         <h3>Focus - Login</h3>
         
-        <label for="name">
-          <span>Name</span>
-          <input type="text" autocorrect="off" autocapitalize="off" 
-                 value="" name="name" placeholder="username" />
+        <label for="email">
+          <span>Email</span>
+          <input type="email" autocorrect="off" autocapitalize="off" 
+                 value="" name="email" 
+                 placeholder="email" />
         </label>
         <label for="password">
           <span>Password</span>
           <input type="password" value="" name="password" />
         </label>
         <input type="submit" value="Login" />
+        <p>or <a href="#!/signup">Sign Up</a></p>
       </form>
     </script>
 
-    <script type="text/html" id="replicate_tpl">
-      <h2>Replicate</h2>
+    <script type="text/html" id="signup">
+      <form action="#signup" class="modalform">
+        <h3>Focus - Sign Up</h3>
+        
+        <img id="gravatar_preview" />
+
+        <label for="email">
+          <span>Email</span>
+          <input type="email" autocorrect="off" autocapitalize="off" 
+                 id="gravatar_entry" 
+                 value="" name="email" placeholder="username" />
+        </label>
+        <label for="name">
+          <span>Name</span>
+          <input type="text" autocorrect="off" autocapitalize="off" 
+                 value="" name="name" placeholder="username" />
+        </label>
+
+        <label for="password">
+          <span>Password</span>
+          <input type="password" value="" name="password" />
+        </label>
+        <label for="email">
+          <span>WorkGroup</span>
+          <input type="text" autocorrect="off" autocapitalize="off" 
+                 value="" name="workgroup" placeholder="username" />
+        </label>
+        <input type="submit" value="Sign Up" />
+        <p>or <a href="#">Login</a></p>
+      </form>
     </script>
     
     <script type="text/html" id="users_tpl">
@@ -148,7 +178,7 @@
                    class="gravatar"
                    onerror="this.src='./outline.png';" 
                    alt="{{name}}" title="{{name}}"/>
-              <span class="name">{{name}}</span>
+              <span class="name">{{nickname}}</span>
               {{/profile}}
               </div>
             <span class="state">
@@ -275,7 +305,9 @@
 
   <script src="../../../_utils/script/jquery.js"></script>
   <script src="../../../_utils/script/jquery.couch.js"></script>
+  <script src="../../../_utils/script/sha1.js"></script>
   
+  <script src="./md5.js"></script>
   <script src="./mustache.js"></script>
   <script src="./utils.js"></script>
   <script src="./focus.js"></script>
