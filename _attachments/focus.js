@@ -183,27 +183,13 @@ var Focus = (function () {
   });
   
   router.post("restartsync", function () {
-    $(".syncstatus").addClass("working").val("Starting ...");
-    var u   = getSyncDetails().user,
-        rem = "http://" + u.name + ":" + u.password + "@" + u.server + "/" + u.workgroup;
-    
-    postSync({source:rem, target:u.workgroup, continuous:true}, function(d1) {
-      postSync({source:u.workgroup, target:rem, continuous:true}, function(d2) {
-        router.refresh();
-      });
-    });
-
+    $(".syncstatus").addClass("working").find("div").text("Starting ...");
+    doSync(false);
   });
 
   router.post("pausesync", function() {
-    $(".syncstatus").addClass("working").val("Pausing ...");
-    var u   = getSyncDetails().user,
-        rem = "http://" + u.name + ":" + u.password + "@" + u.server + "/" + u.workgroup;
-    postSync({source:rem, target:u.workgroup, continuous:true, cancel:true}, function(d1) {
-      postSync({source:u.workgroup, target:rem, continuous:true, cancel:true}, function(d2) {
-        router.refresh();
-      });
-    });
+    $(".syncstatus").addClass("working").find("div").text("Pausing ...");
+    doSync(true);
   });
   
   router.post("sync", function (e, data) {
@@ -241,6 +227,30 @@ var Focus = (function () {
       }
     });
   });          
+
+  function doSync(cancel) {
+
+    var u      = getSyncDetails().user,
+        workgrp = "focus-" + u.workgroup,
+        remote = "http://" + u.name + ":" + u.password + "@"
+      + u.server + "/" + workgrp;
+    
+    var syncFromObj = {source:remote, target:workgrp, continuous:true};
+    if (cancel) {
+      syncFromObj.cancel = true;
+    }
+    var syncToObj = {source:workgrp, target:remote,
+                     continuous:true, create_target:true};
+    if (cancel) {
+      syncToObj.cancel = true;
+    }
+    
+    postSync(syncToObj, function(d1) {
+      postSync(syncFromObj, function(d2) {
+        router.refresh();
+      });
+    });
+  };
   
   function setWorkGroup(obj, workgroup) {
     obj.apps = obj.apps || {};
@@ -255,10 +265,6 @@ var Focus = (function () {
     return obj;
   };
   
-  function syncStatus(details, data) {
-    
-  };
-  
   function postSync(obj, callback) { 
     $.ajax({
       type        : "POST",
@@ -266,6 +272,10 @@ var Focus = (function () {
       contentType : "application/json",
       dataType    : "json",
       data        : JSON.stringify(obj),
+      error       : function() {
+        notifyMsg("Error Starting Sync");
+        router.refresh();
+      },
       success     : function(data) {
         callback(data);
       }
@@ -314,8 +324,7 @@ var Focus = (function () {
   function showUser(prefix, name) {
     fetchList("done", name, function(done) {
       fetchList("now", name, function(now) {
-        fetchList("later", name, function(later) {
-          
+        fetchList("later", name, function(later) {      
           var isSelf    = name === user.userCtx.name,
               tmpRender = function(view) {
                 return Mustache.to_html($("#items_tpl").html(), {
@@ -608,7 +617,7 @@ var Focus = (function () {
     $(document).bind("change", function(e) {
       $("#avapreview").attr("src", getProfile($(e.target).val()).gravatar_url);
     });
-
+    
     $("input").live("blur", function (e) {
       if ($(e.target).attr("id") === "gravatar_entry") {
         $("#gravatar_preview")
@@ -616,7 +625,6 @@ var Focus = (function () {
                 + hex_md5($(e.target).val()) + '.jpg?s=40&d=identicon');
       }
     });
-
   };
   
   window.onload = function () { setTimeout(loadUser, 500); };
