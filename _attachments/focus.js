@@ -78,6 +78,9 @@ var Focus = (function () {
             details.status = "Paused, Press to restart";
           }
           render("#content", "#sync_tpl", details);
+        },
+        error : function () {
+          render("#content", "#sync_denied");
         }
       });
     }
@@ -88,10 +91,18 @@ var Focus = (function () {
   });
 
   router.get("!/signup", function () {
-    render("#content", "#signup");
+    if (user !== null) {
+      router.go("#!");
+    } else {
+      render("#content", "#signup");
+    }
   });
   router.get("!/login", function () {
-    render("#content", "#login_tpl");
+    if (user !== null) {
+      router.go("#!");
+    } else {
+      render("#content", "#login_tpl");
+    }
   });
 
   router.get("!/team", function () {
@@ -223,7 +234,11 @@ var Focus = (function () {
     
     $.couch.signup(user, data.password, {
       success: function() {
-        window.location.reload(true);
+        $.couch.login({
+          name     : data.email,
+          password : data.password,
+          success  : function() { window.location.reload(true); }
+        });
       }
     });
   });          
@@ -469,6 +484,10 @@ var Focus = (function () {
     }
   };
 
+  function anonAccess(url) {
+    return url === "!/signup" || url === "!/login";
+  };
+  
   function urlChange(verb, url, args) {
 
     if (verb === "GET") {
@@ -487,11 +506,11 @@ var Focus = (function () {
       if (selected) {
         $("." + selected).addClass("selected");
       }
-
+      
       if(!ensureLoggedIn(verb, url, args)) {
         return false;
       } else { 
-        if (url !== "!/signup" && dbName === null) {
+        if (dbName === null && !anonAccess(url)) {
           render("#content", "#select_workgroup");
           return false;
         }
@@ -503,7 +522,7 @@ var Focus = (function () {
   };
   
   function ensureLoggedIn(verb, url, args) {
-    if (verb === 'GET' && user === null && url !== "!/signup") {
+    if (verb === 'GET' && user === null && !anonAccess(url)) {
       render("#content", "#login_tpl");
       return false;
     }
@@ -619,10 +638,13 @@ var Focus = (function () {
     });
     
     $("input").live("blur", function (e) {
-      if ($(e.target).attr("id") === "gravatar_entry") {
+      if ($(e.target).attr("id") === "signup_email") {
         $("#gravatar_preview")
           .attr("src", 'http://www.gravatar.com/avatar/'
                 + hex_md5($(e.target).val()) + '.jpg?s=40&d=identicon');
+        if ($("#signup_name").val() === "") {
+          $("#signup_name").val($(e.target).val().split("@")[0]);
+        }
       }
     });
   };

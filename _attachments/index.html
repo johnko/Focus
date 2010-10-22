@@ -95,6 +95,13 @@
       </ul>
     </script>
 
+    <script type="text/html" id="sync_denied">
+      <h2>Sync Denied!</h2>
+      <p class="main">
+        Sorry, you can only activate sync from your local account.
+      </p>
+    </script>
+
     <script type="text/html" id="login_tpl">
       <form action="#login" class="modalform">
         <h3>Focus - Login</h3>
@@ -123,26 +130,28 @@
         <label for="email">
           <span>Email</span>
           <input type="email" autocorrect="off" autocapitalize="off" 
-                 id="gravatar_entry" 
+                 id="signup_email" 
                  value="" name="email" placeholder="username" />
         </label>
-        <label for="name">
-          <span>Name</span>
-          <input type="text" autocorrect="off" autocapitalize="off" 
-                 value="" name="name" placeholder="username" />
-        </label>
-
         <label for="password">
           <span>Password</span>
           <input type="password" value="" name="password" />
         </label>
-        <label for="email">
+
+        <label for="name">
+          <span>Nickname</span>
+          <input type="text" autocorrect="off" autocapitalize="off" 
+                 id="signup_name"
+                 value="" name="name" placeholder="username" />
+        </label>
+
+        <label for="email" style="display:none;" >
           <span>WorkGroup</span>
           <input type="text" autocorrect="off" autocapitalize="off" 
-                 value="" name="workgroup" placeholder="username" />
+                 value="local" name="workgroup" placeholder="username" />
         </label>
         <input type="submit" value="Sign Up" />
-        <p>or <a href="#">Login</a></p>
+        <p>or <a href="#!/login">Login</a></p>
       </form>
     </script>
     
