@@ -619,9 +619,7 @@ var Focus = (function () {
 
   };
   
-  window.onload = function () {
-    setTimeout(loadUser, 500);
-  };
+  window.onload = function () { setTimeout(loadUser, 500); };
     
   bindEvents();
 
