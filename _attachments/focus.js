@@ -65,30 +65,21 @@ var Focus = (function () {
         user     : {}
       });
     } else {
-      $.ajax({
-        type: "GET",
-        url: urlPrefix + "_active_tasks",
-        contentType : "application/json",
-        dataType: 'json',
-        data: {},
-        error: function(xhr, text, error) {
-          console.error(arguments);
-        },
-        success: function(data) {
+      $.couch.activeTasks({
+        success : function (data) {
           if (data.length !== 0) {
             // Check the replications are for this instance
             details.action = "#pausesync";
             details.cssClass = "running";
             details.status = "Running, Press to pause";
-            render("#content", "#sync_tpl", details);
           } else {
             details.action = "#restartsync";
             details.cssClass = "paused";
             details.status = "Paused, Press to restart";
-            render("#content", "#sync_tpl", details);
           }
+          render("#content", "#sync_tpl", details);
         }
-      });      
+      });
     }
   });
   
@@ -184,13 +175,9 @@ var Focus = (function () {
 
   router.post("select_workgroup", function (e, data) {
     var users = $.couch.db("_users");
-    users.openDoc("org.couchdb.user:" + user.userCtx.name, {
-      success : function(userObj) {
-        users.saveDoc(setWorkGroup(userObj, "focus-"+ data.workgroup), {
-          success: function() {
-            window.location.reload(true);
-          }
-        });
+    users.saveDoc(setWorkGroup(userDoc, "focus-"+ data.workgroup), {
+      success: function() {
+        window.location.reload(true);
       }
     });
   });
