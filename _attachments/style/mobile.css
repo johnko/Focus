@@ -216,15 +216,18 @@ div.avatar img {
     height  : 40px;
 }
 
-#message {
-    display   : block;
+#messagewrapper {
     position  : absolute;
-    width     : 93%;
-    right     : 10px;
+    right     : 67px;
     left      : 9px;
-    top       : 8px;
-    margin    : 0px;
+    top       : 8px;    
     height    : 30px;
+}
+
+#message {
+    height:100%; 
+    width:100%;
+    margin    : 0px;
     font-size : 90%;
     padding   : 5px;
     -webkit-box-sizing : border-box;
@@ -254,6 +257,7 @@ select {
 }
 
 #createbtn { 
+    width:60px;
     position  : absolute;
     right     : 8px;
     top       : 8px;
