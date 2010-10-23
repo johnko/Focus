@@ -1,6 +1,7 @@
 var Focus = (function () {
 
-  var dbName    = null,
+  var dbName    = "focus",
+      adminParty = null,
       urlPrefix = "/",
       router    = new Router(),
       user      = null,
@@ -183,7 +184,6 @@ var Focus = (function () {
     });
   });
 
-
   router.post("select_workgroup", function (e, data) {
     var users = $.couch.db("_users");
     users.saveDoc(setWorkGroup(userDoc, "focus-"+ data.workgroup), {
@@ -219,30 +219,45 @@ var Focus = (function () {
 
   router.post("signup", function (e, data) {
 
-    var user = {
-      name:data.email,
-      "couch.app.profile" : {
-        rand         : Math.random().toString(),
-        email        : data.email,
-        nickname     : data.name,
-        gravatar_url : 'http://www.gravatar.com/avatar/' +
-          hex_md5(data.email) + '.jpg?s=40&d=identicon'
-      }
-    };
-
-    user = setWorkGroup(user, "focus-"+ data.workgroup);
+    var workgroup = "focus",
+        user = {
+          name : data.email,
+          "couch.app.profile" : {
+            rand         : Math.random().toString(),
+            email        : data.email,
+            nickname     : data.name,
+            gravatar_url : 'http://www.gravatar.com/avatar/' +
+              hex_md5(data.email) + '.jpg?s=40&d=identicon'
+          }
+        };
     
-    $.couch.signup(user, data.password, {
-      success: function() {
-        $.couch.login({
-          name     : data.email,
-          password : data.password,
-          success  : function() { window.location.reload(true); }
-        });
-      }
-    });
-  });          
-
+    user = setWorkGroup(user, workgroup);
+    
+    var signUp = function() {
+      $.couch.signup(user, data.password, {
+        success: function() {
+          $.couch.login({
+            name     : data.email,
+            password : data.password,
+            success  : function() { window.location.reload(true); }
+          }); 
+        }
+      });
+    };
+    
+    if (adminParty) { 
+      $.ajax({
+        type        : "PUT",
+        url         : urlPrefix + "_config/admins/" + data.email,
+        contentType : "application/json",
+        data        : '"' + data.password + '"',
+        success     : function(data) { signUp(); }
+      });
+    } else {
+      signUp();
+    }
+  });  
+  
   function doSync(cancel) {
 
     var u      = getSyncDetails().user,
@@ -497,10 +512,10 @@ var Focus = (function () {
         
       // nasty way of figuring out what nav should be highlighted
       // can do a nicer way
-      var selected = (url === "!/")   ? "navmine" :
+      var selected = (url === "!")   ? "navmine" :
         (url.indexOf("focus") !== -1) ? "navall" : 
         (url.indexOf("team") !== -1)  ? "navteam" : 
-        (url.indexOf("tags") !== -1)  ? "navtags" : "navmine";
+        (url.indexOf("tags") !== -1)  ? "navtags" : false;
       
       $(".selected").removeClass("selected");
       if (selected) {
@@ -523,7 +538,7 @@ var Focus = (function () {
   
   function ensureLoggedIn(verb, url, args) {
     if (verb === 'GET' && user === null && !anonAccess(url)) {
-      render("#content", "#login_tpl");
+      render("#content", "#signup");
       return false;
     }
     return true;
@@ -539,21 +554,24 @@ var Focus = (function () {
   };
   
   function loadUser() {
+    
     $.getJSON(urlPrefix + "_session/", function (data) {
-
-      if (data && data.userCtx && data.userCtx.name !== null) {
+      
+      adminParty = (data.userCtx.name === null &&
+                    data.userCtx.roles.indexOf("_admin") !== -1);
+      
+      if (data.userCtx && data.userCtx.name !== null) {
         
         user = data;
-        var users = $.couch.db("_users");
         $("header, #footer").show();
         
-        users.openDoc("org.couchdb.user:" + user.userCtx.name, {
+        $.couch.db("_users").openDoc("org.couchdb.user:" + user.userCtx.name, {
           success: function (userObj) {
-
+            
             userDoc = userObj;
             
             if (userObj.apps && userObj.apps.focus) {
-              dbName = userObj.apps.focus.selectedWorkGroup;
+              //dbName = userObj.apps.focus.selectedWorkGroup;
               db = $.couch.db(dbName);
               loadUsers(router.init);
               initComet();

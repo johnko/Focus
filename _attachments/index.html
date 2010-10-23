@@ -78,12 +78,13 @@
     <script type="text/html" id="tags_tpl">
       <h2>Tags</h2>
       <ul class="tags">
-        {{#tags}}
+      {{#tags}}
         <li><a href="#!/tags/{{name}}" style="font-size:{{size}}px">
             #{{name}}
         </a></li>
-        {{/tags}}
+      {{/tags}}
       </ul>
+      {{^tags}}<div class="none">No Tags :(</div>{{/tags}}
 
       <h2>Mentions</h2>
       <ul class="mentions">
@@ -93,6 +94,7 @@
         </a></li>
         {{/mentions}}
       </ul>
+      {{^mentions}}<div class="none">No Mentions :(</div>{{/mentions}}
     </script>
 
     <script type="text/html" id="sync_denied">
@@ -117,7 +119,7 @@
           <input type="password" value="" name="password" />
         </label>
         <input type="submit" value="Login" />
-        <p>or <a href="#!/signup">Sign Up</a></p>
+        or <a href="#!/signup">Sign Up</a>
       </form>
     </script>
 
@@ -151,7 +153,7 @@
                  value="local" name="workgroup" placeholder="username" />
         </label>
         <input type="submit" value="Sign Up" />
-        <p>or <a href="#!/login">Login</a></p>
+        or <a href="#!/login">Login</a>
       </form>
     </script>
     
@@ -169,6 +171,7 @@
             </a>
         </li>
         {{/profile}}{{/users}}
+        {{^users}}<li class="none">Nobody on your team yet</li>{{/users}}
       </ul>
     </script>
 

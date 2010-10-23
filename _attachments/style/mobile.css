@@ -63,6 +63,11 @@ ul {
     border-bottom : 1px solid #AAA;
 }
 
+div.none { 
+    border-top : 1px solid #AAA; 
+    border-bottom : 1px solid #AAA; 
+}
+
 .users { margin-top:20px; } 
 
 #items .users { 
@@ -377,9 +382,6 @@ label.checkbox {
 
 .desc, .tags, .mentions { 
     padding: 0px 10px;
-}
-.tags { 
-    margin-bottom: 50px;
 }
 .tags li, .mentions li { 
     display:inline;
