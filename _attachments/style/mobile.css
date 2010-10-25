@@ -39,7 +39,6 @@ fieldset {
     padding       : 0px;
     margin-bottom : 10px;
     border        : 0px;
-    overflow      : auto;
 }
 
 label {
@@ -614,7 +613,6 @@ h3 #content {
 .mainform fieldset { 
     border-bottom : 1px solid #AAA;
     border-top    : 1px solid #FFF;
-    overflow      : auto;
     margin        : 0px;
 }
 

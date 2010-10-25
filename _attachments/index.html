@@ -144,8 +144,7 @@
         <label for="name">
           <span>Nickname</span>
           <input type="text" autocorrect="off" autocapitalize="off" 
-                 id="signup_name"
-                 value="" name="name" placeholder="username" />
+                 id="signup_name" value="" name="name" />
         </label>
 
         <label for="email" style="display:none;" >
@@ -240,12 +239,37 @@
       </form>
     </script>
 
+    <script type="text/html" id="edit_profile">
+      <form action="#save_profile" class="mainform paddedform">
+
+        <img id="gravatar_preview" />
+        <fieldset>
+          <label for="email">Email
+            <span><input type="email" autocorrect="off" autocapitalize="off" 
+                         id="signup_email" 
+                         value="" name="email" placeholder="username" />
+            </span>
+          </label>
+        </fieldset>
+
+        <fieldset class="last">
+          <label for="name">
+            Nickname
+            <span><input type="text" autocorrect="off" autocapitalize="off" 
+                         id="signup_name" value="" name="name" /></span>
+          </label>
+        </fieldset>
+        <input type="submit" value="Save Profile" class="fullbtn" />
+      </form>
+
+    </script>
+
     <script type="text/html" id="edit_tpl">
 
       <form action="#edit" id="editform" class="mainform">
 
         <div id="editheader">
-          <a href="Javascript:history:back()" class="back btn">&lt; Back</a>
+          <a href="Javascript:history.back()" class="back btn">&lt; Back</a>
           
           <p class="details">
             {{#created}}Created by {{created_by}}, {{created_at}}{{/created}}
@@ -293,6 +317,7 @@
               <input type="checkbox" name="publish" id="publish"
                      {{#publish}}checked="checked"{{/publish}} />
             </span>
+          </label>
         </fieldset>
         
         <fieldset class="last">
@@ -301,6 +326,7 @@
               <input type="checkbox" name="blocked" id="blocked"
                      {{#blocked}}checked="checked"{{/blocked}} />
             </span>
+          </label>
         </fieldset>
      
         <div class="btns">

@@ -210,28 +210,26 @@ var Focus = (function () {
   
   router.post("delete", function (e, data) {
     db.removeDoc({_id: data._id, _rev: data._rev}, {
-      success:function() {
+      success: function() {
         notifyMsg("deleted");
         router.go(getRedirectUrl());
       }
     });  
   });
 
+  router.post("save_profile", function (e, data) {
+    userDoc["couch.app.profile"] = makeCouchAppProfile(data.name, data.email);
+    $.couch.db("_users").saveDoc(userDoc, {
+      success: function() { window.location.reload(true); }
+    });
+  });  
   router.post("signup", function (e, data) {
 
     var workgroup = "focus",
         user = {
           name : data.email,
-          "couch.app.profile" : {
-            rand         : Math.random().toString(),
-            email        : data.email,
-            nickname     : data.name,
-            gravatar_url : 'http://www.gravatar.com/avatar/' +
-              hex_md5(data.email) + '.jpg?s=40&d=identicon'
-          }
+          "couch.app.profile" : getCouchAppProfile(data.name, data.email)
         };
-    
-    user = setWorkGroup(user, workgroup);
     
     var signUp = function() {
       $.couch.signup(user, data.password, {
@@ -258,18 +256,27 @@ var Focus = (function () {
     }
   });  
   
+  function makeCouchAppProfile(name, email) {
+    return {
+      rand         : Math.random().toString(),
+      email        : email,
+      nickname     : name,
+      gravatar_url : 'http://www.gravatar.com/avatar/' +
+        hex_md5(email) + '.jpg?s=40&d=identicon'
+    };
+  };
+  
   function doSync(cancel) {
 
     var u      = getSyncDetails().user,
-        workgrp = "focus-" + u.workgroup,
         remote = "http://" + u.name + ":" + u.password + "@"
-      + u.server + "/" + workgrp;
+      + u.server + "/" + u.workgroup;
     
-    var syncFromObj = {source:remote, target:workgrp, continuous:true};
+    var syncFromObj = {source:remote, target:u.workgroup, continuous:true};
     if (cancel) {
       syncFromObj.cancel = true;
     }
-    var syncToObj = {source:workgrp, target:remote,
+    var syncToObj = {source:u.workgroup, target:remote,
                      continuous:true, create_target:true};
     if (cancel) {
       syncToObj.cancel = true;
@@ -525,11 +532,9 @@ var Focus = (function () {
       
       if(!ensureLoggedIn(verb, url, args)) {
         return false;
-      } else { 
-        if (dbName === null && !anonAccess(url)) {
-          render("#content", "#select_workgroup");
-          return false;
-        }
+      } else if (userDoc["couch.app.profile"] === undefined) {
+        render("#content", "#edit_profile");
+        return false;
       }
       return true;
     } else {
@@ -567,18 +572,11 @@ var Focus = (function () {
         $("header, #footer").show();
         
         $.couch.db("_users").openDoc("org.couchdb.user:" + user.userCtx.name, {
-          success: function (userObj) {
-            
+          success: function (userObj) {            
             userDoc = userObj;
-            
-            if (userObj.apps && userObj.apps.focus) {
-              //dbName = userObj.apps.focus.selectedWorkGroup;
-              db = $.couch.db(dbName);
-              loadUsers(router.init);
-              initComet();
-            } else {
-              router.init();
-            }
+            db = $.couch.db(dbName);
+            loadUsers(router.init);
+            initComet();
           }
         });
       } else {
