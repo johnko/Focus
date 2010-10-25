@@ -515,6 +515,7 @@ var Focus = (function () {
       var selected = (url === "!")   ? "navmine" :
         (url.indexOf("focus") !== -1) ? "navall" : 
         (url.indexOf("team") !== -1)  ? "navteam" : 
+        (url.indexOf("sync") !== -1)  ? "navshare" : 
         (url.indexOf("tags") !== -1)  ? "navtags" : false;
       
       $(".selected").removeClass("selected");
