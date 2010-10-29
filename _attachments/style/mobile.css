@@ -39,6 +39,7 @@ fieldset {
     padding       : 0px;
     margin-bottom : 10px;
     border        : 0px;
+    overflow      : auto;
 }
 
 label {
@@ -288,7 +289,7 @@ select {
     display  : none;
 }
 
-input[type="submit"], button {
+input[type="submit"], input[type="button"], button {
     padding         : 5px 5px; 
     background      : 
     -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F9F9F9), to(#E3E3E3));
@@ -684,11 +685,11 @@ header, #footer {
     outline:none;
     text-indent:30px;
 }
-.syncstatus.working div { 
+.working div { 
     background: url(../loadingsmall.gif) no-repeat 5px center !important;
 }
 .paused div { 
-    background: url(../control-pause.png) no-repeat 5px center !important;
+    background: url(../control-pause.png) no-repeat 5px center;
 }
 .running div { 
     background: url(../tick.png) no-repeat 5px center !important;
@@ -714,3 +715,27 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 .main { 
     padding:0px 10px;
 }
+
+#syncbtns button {
+    text-indent:20px;
+    width:33%;
+    float:left;
+    display:block;
+}
+#syncbtns button:last-child {
+    -moz-border-radius-topleft:0px;
+    -moz-border-radius-bottomleft:0px;
+}
+#syncbtns button:first-child {
+    -moz-border-radius-topright:0px;
+    -moz-border-radius-bottomright:0px;
+}
+
+#syncbtns { 
+    overflow:auto;
+}
+#syncbtns .middle {
+    border-width:1px 0 1px 0;
+    -moz-border-radius:0px;
+    width:34%;
+} 

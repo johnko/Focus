@@ -59,24 +59,15 @@ var Focus = (function () {
     
     var details = getSyncDetails();
     if (isEmpty(details)) {
-      render("#content", "#sync_tpl", {
-        disabled : "disabled='disabled'",
-        action   : "#restartsync",
-        status   : "Not Configured",
-        user     : {}
-      });
+      render("#content", "#sync_tpl", {});
     } else {
       $.couch.activeTasks({
         success : function (data) {
           if (data.length !== 0) {
             // Check the replications are for this instance
-            details.action = "#pausesync";
             details.cssClass = "running";
-            details.status = "Running, Press to pause";
           } else {
-            details.action = "#restartsync";
             details.cssClass = "paused";
-            details.status = "Paused, Press to restart";
           }
           render("#content", "#sync_tpl", details);
         },
@@ -204,8 +195,35 @@ var Focus = (function () {
   });
   
   router.post("sync", function (e, data) {
-    var details = {"user":data};
-    localStorage.syncDetails = JSON.stringify(details);
+    if (!userDoc.focus) {
+      userDoc.focus = {};
+    }
+    userDoc.focus.syncDetails = {
+      name      : data.name,
+      password  : data.password,
+      server    : data.server,
+      workgroup : data.workgroup
+    };
+    $.couch.db("_users").saveDoc(userDoc);
+
+    var $button = $("#syncbtns button[data-action="+data.action+"]");
+    $button.addClass("working");
+
+    if (data.action === "pull") {
+      replicate(remoteSyncUrl(), data.workgroup, false, function () {
+        $button.removeClass("working");
+        notifyMsg("Replication Complete");
+      });
+    } else if (data.action === "push") {
+      replicate(data.workgroup, remoteSyncUrl(), false, function () {
+        $button.removeClass("working");
+        notifyMsg("Replication Complete");
+      });      
+    } else if (data.action === "sync") {
+      replicate(data.workgroup, remoteSyncUrl(), true, function () {
+        window.location.reload(true);
+      });
+    }
   });
   
   router.post("delete", function (e, data) {
@@ -222,13 +240,13 @@ var Focus = (function () {
     $.couch.db("_users").saveDoc(userDoc, {
       success: function() { window.location.reload(true); }
     });
-  });  
+  });
+  
   router.post("signup", function (e, data) {
-
     var workgroup = "focus",
         user = {
           name : data.email,
-          "couch.app.profile" : getCouchAppProfile(data.name, data.email)
+          "couch.app.profile" : makeCouchAppProfile(data.name, data.email)
         };
     
     var signUp = function() {
@@ -254,7 +272,30 @@ var Focus = (function () {
     } else {
       signUp();
     }
-  });  
+  });
+
+  function replicate(source, target, continous, callback) {
+    
+    var opts = {create_target:true};
+    if (continous) {
+      opts.continous = true;
+    }
+    console.log(db);
+    $.couch.replicate(source, target, opts, {
+      error: function() {
+        console.log(arguments);
+      },
+      success: function (data) {
+        console.log(data);
+        if (continous) {
+          db.replicate(target, source, opts, callback);
+        } else {
+          console.log("hello");
+          callback(data);
+        }
+      }
+    });
+  };
   
   function makeCouchAppProfile(name, email) {
     return {
@@ -266,9 +307,15 @@ var Focus = (function () {
     };
   };
   
+  function remoteSyncUrl() {
+    var x = getSyncDetails();
+    return "http://" + x.name + ":" + x.password + "@"
+      + x.server + "/" + x.workgroup;
+  };
+  
   function doSync(cancel) {
-
-    var u      = getSyncDetails().user,
+    
+    var u = getSyncDetails(),
         remote = "http://" + u.name + ":" + u.password + "@"
       + u.server + "/" + u.workgroup;
     
@@ -320,7 +367,7 @@ var Focus = (function () {
   };
   
   function getSyncDetails() {
-    return JSON.parse(localStorage && localStorage.syncDetails || "{}");
+    return userDoc.focus && userDoc.focus.syncDetails || {};
   };
   
   function getRedirectUrl() {
@@ -532,7 +579,7 @@ var Focus = (function () {
       
       if(!ensureLoggedIn(verb, url, args)) {
         return false;
-      } else if (userDoc["couch.app.profile"] === undefined) {
+      } else if (userDoc && userDoc["couch.app.profile"] === undefined) {
         render("#content", "#edit_profile");
         return false;
       }
@@ -647,6 +694,8 @@ var Focus = (function () {
         router.go(document.location.hash + "/edit/" + item.attr("data-id"));
       } else if ($(e.target).is("input[name=delete]")) {
         $("#deleteform").submit();
+      } else if ($(e.target).is("button.syncbtn")) {
+        $("#syncaction").val($(e.target).attr("data-action"));
       }
     });
 

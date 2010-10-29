@@ -31,48 +31,51 @@
     <div id="content" class="loading">&nbsp;</div>
     
     <div id="footer">
-      <a href="#!/logout">Logout</a> | 
-      <a href="#!/sync">Share</a>
+      <a href="#!/logout">Logout</a>
     </div>
 
     <script type="text/html" id="sync_tpl">
       
-      <form action="{{action}}" class="startsync">
-        <button type="submit" {{disabled}} class="syncstatus {{cssClass}}">
-          <div class="statusicon">{{status}}</div>
-        </button>
-      </form>
+      <!-- <form action="{{action}}" class="startsync"> -->
+      <!--   <button type="submit" {{disabled}} class="syncstatus {{cssClass}}"> -->
+      <!--     <div class="statusicon">{{status}}</div> -->
+      <!--   </button> -->
+      <!-- </form> -->
       
-      {{#user}}
       <form action="#sync" id="syncform" class="mainform">
         <fieldset class="first">
           <label>Server
-          <span><input type="text" name="server" value="{{server}}" 
-                      placeholder="example.com" /></span>
+            <span><input type="text" name="server" value="{{server}}" 
+                         placeholder="example.com" /></span>
           </label>
         </fieldset>        
         <fieldset>
           <label>Workgroup
           <span><input type="text" name="workgroup" value="{{workgroup}}"
-                      placeholder="mywork" /></span>
+                       placeholder="mywork" /></span>
           </label>
         </fieldset>
         <fieldset>
           <label>User Name
-          <span><input type="text" name="name" value="{{name}}"
-                      placeholder="johndoe" /></span>
+            <span><input type="text" name="name" value="{{name}}"
+                         placeholder="johndoe" /></span>
           </label>
         </fieldset>
         <fieldset class="last">
           <label>Password
-          <span><input type="password" value="{{password}}"
-                      name="password" /></span>
+            <span><input type="password" value="{{password}}"
+                         name="password" /></span>
           </label>
         </fieldset>
-        <input type="submit" id="syncbtn" class="fullbtn" 
-               value="Update Details" />
+        
+        <input type="hidden" name="action" id="syncaction" />
+        
+        <div id="syncbtns">
+          <button class="syncbtn" data-action="push"><div>Push</div></button>
+          <button class="syncbtn middle" data-action="pull"><div>Pull</div></button>
+          <button class="syncbtn {{cssClass}}" data-action="sync"><div>Sync</div></button>
+        </div>
       </form>
-      {{/user}}
 
     </script>
 
