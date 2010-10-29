@@ -245,6 +245,9 @@ var Focus = (function () {
   });
   
   router.post("signup", function (e, data) {
+
+    data.password = isMobile ? mobilePass : data.password;
+    
     var workgroup = "focus",
         user = {
           name : data.email,
@@ -590,7 +593,7 @@ var Focus = (function () {
   
   function ensureLoggedIn(verb, url, args) {
     if (verb === 'GET' && user === null && !anonAccess(url)) {
-      renderSignup();;
+      renderSignup();
       return false;
     }
     return true;
@@ -636,14 +639,18 @@ var Focus = (function () {
       } else if (isMobile) {
 
         // Mobile Browsers will be logged in automatically
-        $.couch.db("_users").allDocs({
+        $.couch.db("_users").allDocs({          
           include_docs:true,
           success: function(data) {
-            $.couch.login({
-              name     : data.rows[1].doc.name,
-              password : mobilePass,
-              success  : function() { window.location.reload(true); }
-            });
+            if (data.rows.length > 1) {
+              $.couch.login({
+                name     : data.rows[1].doc.name,
+                password : mobilePass,
+                success  : function() { window.location.reload(true); }
+              });
+            } else {
+              router.init();
+            }
           }
         });
       } else {

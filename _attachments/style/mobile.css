@@ -272,6 +272,7 @@ select {
     font-size : 90%;
     padding   : 4px;
     z-index   : 300;
+    text-align:center
 }
 
 .clearfix:after {
