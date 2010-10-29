@@ -139,7 +139,7 @@
                  id="signup_email" 
                  value="" name="email" placeholder="username" />
         </label>
-        <label for="password">
+        <label for="password" {{display_pass}}>
           <span>Password</span>
           <input type="password" value="" name="password" />
         </label>
@@ -156,7 +156,7 @@
                  value="local" name="workgroup" placeholder="username" />
         </label>
         <input type="submit" value="Sign Up" />
-        or <a href="#!/login">Login</a>
+        <span {{display_pass}}>or <a href="#!/login">Login</a></span>
       </form>
     </script>
     

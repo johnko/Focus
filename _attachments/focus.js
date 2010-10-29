@@ -1,13 +1,15 @@
 var Focus = (function () {
 
-  var dbName    = "focus",
+  var dbName     = "focus",
+      mobilePass = "couch!db",
       adminParty = null,
-      urlPrefix = "/",
-      router    = new Router(),
-      user      = null,
-      userDoc   = null,
-      profiles  = [],
-      db        = null;
+      urlPrefix  = "/",
+      isMobile   = isMobile(),
+      router     = new Router(),
+      user       = null,
+      userDoc    = null,
+      profiles   = [],
+      db         = null;
   
   var xhrCache = {},
       docCache = {};
@@ -86,7 +88,7 @@ var Focus = (function () {
     if (user !== null) {
       router.go("#!");
     } else {
-      render("#content", "#signup");
+      renderSignup();
     }
   });
   router.get("!/login", function () {
@@ -280,17 +282,14 @@ var Focus = (function () {
     if (continous) {
       opts.continous = true;
     }
-    console.log(db);
     $.couch.replicate(source, target, opts, {
       error: function() {
         console.log(arguments);
       },
       success: function (data) {
-        console.log(data);
         if (continous) {
           db.replicate(target, source, opts, callback);
         } else {
-          console.log("hello");
           callback(data);
         }
       }
@@ -591,10 +590,18 @@ var Focus = (function () {
   
   function ensureLoggedIn(verb, url, args) {
     if (verb === 'GET' && user === null && !anonAccess(url)) {
-      render("#content", "#signup");
+      renderSignup();;
       return false;
     }
     return true;
+  };
+
+  function renderSignup() {
+    var data = !isMobile ? {} : {
+      display_pass : "style='display:none'",
+      password     : mobilePass
+    };
+    render("#content", "#signup", data);
   };
   
   function render(dom, tpl, data) {
@@ -626,12 +633,25 @@ var Focus = (function () {
             initComet();
           }
         });
+      } else if (isMobile) {
+
+        // Mobile Browsers will be logged in automatically
+        $.couch.db("_users").allDocs({
+          include_docs:true,
+          success: function(data) {
+            $.couch.login({
+              name     : data.rows[1].doc.name,
+              password : mobilePass,
+              success  : function() { window.location.reload(true); }
+            });
+          }
+        });
       } else {
         router.init();
       }
     });
   };
-  
+             
   function loadUsers(callback) {
     fetch("user-created", {group:true}, function(users) {
       for (var keys = [], i = 0; i < users.rows.length; i += 1) {
@@ -682,6 +702,11 @@ var Focus = (function () {
     });
   };
 
+  function isMobile() {
+    return navigator.userAgent.toLowerCase()
+      .match(/(andoid|iphone|ipod)/) !== null;
+  };
+    
   // I dont like these global events, they are bound to the page permanently
   // so may cause conflicts
   function bindEvents() {
