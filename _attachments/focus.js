@@ -6,11 +6,11 @@ var Focus = (function () {
       urlPrefix  = "/",
       isMobile   = isMobile(),
       router     = new Router(),
-      user       = null,
       userDoc    = null,
       profiles   = [],
-      db         = null;
-  
+      showNav    = false,
+      db         = $.couch.db(dbName);
+      
   var xhrCache = {},
       docCache = {};
 
@@ -19,49 +19,30 @@ var Focus = (function () {
   router.pre(urlChange);
   router.error404(function (verb, url) {
     if (verb === "GET") { 
-      render("#content", "#error404", {url:url});
+      render("#error404", {url:url});
     } else {
       console.error(verb, url);
     }
   });
   
-  // I can combine these all into the same clause, I just hate regex
-  router.get("!/team/:name/edit/:id", function (name, id) {
-    createEdit(id);
-  });
-  router.get("!/tags/:tag/edit/:id", function (tag, id) {
-    createEdit(id);
-  });
-  router.get("!/mentions/:tag/edit/:id", function (tag, id) {
-    createEdit(id);
-  });
-  router.get("!/focus/edit/:id", function (id) {
-    createEdit(id);
-  });
-  router.get("!/edit/:id", function (id) {
-    createEdit(id);
-  });
+  router.get(/edit\/([a-z0-9]+)$/, createEdit);
 
+  router.get(/^(!)?$/, function () {
+    showUser("", userDoc.name);
+  });
+  
   router.get("!/logout", function (id) {
     $.couch.logout({
       success : function() {
         document.location.href = "";
       }
     });
-  });
-    
-  router.get("", function () {
-    router.go("#!");
-  });
-  router.get("!", function () {
-    showUser("", user.userCtx.name);
-  });
+  });  
 
   router.get("!/sync", function () {
-    
     var details = getSyncDetails();
     if (isEmpty(details)) {
-      render("#content", "#sync_tpl", {});
+      render("#sync_tpl", {});
     } else {
       $.couch.activeTasks({
         success : function (data) {
@@ -71,60 +52,58 @@ var Focus = (function () {
           } else {
             details.cssClass = "paused";
           }
-          render("#content", "#sync_tpl", details);
+          render("#sync_tpl", details);
         },
         error : function () {
-          render("#content", "#sync_denied");
+          render("#sync_denied");
         }
       });
     }
   });
   
   router.get("!/team/:name", function (name) {
-    showUser("/team/"+name, name);
+    showUser("/team/" + name, name);
   });
 
   router.get("!/signup", function () {
-    if (user !== null) {
+    if (userDoc !== null) {
       router.go("#!");
     } else {
+      showNav = false;
       renderSignup();
     }
   });
   router.get("!/login", function () {
-    if (user !== null) {
+    if (userDoc !== null) {
       router.go("#!");
     } else {
-      render("#content", "#login_tpl");
+      showNav = false;
+      render("#login_tpl", {});
     }
   });
 
   router.get("!/team", function () {
-    render("#content", "#users_tpl", {users:profiles});
+    render("#users_tpl", {users:profiles});
   });
 
   router.get("!/focus", function () {
     fetch("focus-time", {descending:true, limit:25}, function(data) {
-      render("#content", "#items_tpl", {
+      render("#items_tpl", {
         title     : "Focus View",
         items     : viewToList(data),
         urlPrefix : "/focus"
       });
     });
   });
-
-  router.get("!/mentions/:mention", function (mention) {
-    showTagsOrMentions("mentions", mention);
-  });
-
-  router.get("!/tags/:tag", function (tag) {
-    showTagsOrMentions("tags", tag);
+  
+  router.get("!/(tags|mentions)/:tag", function (type, val) {
+    showTagsOrMentions(type, val);
   });
 
   router.get("!/tags", function () {
     fetch("mentions", {group_level:1}, function(mentions) {
       fetch("tags", {group_level:1}, function(tags) {
-        render("#content", "#tags_tpl", {
+        render("#tags_tpl", {
           tags :     sizeUp(tags.rows),
           mentions : sizeUp(mentions.rows)
         });
@@ -149,7 +128,7 @@ var Focus = (function () {
     doc.blocked = data.blocked == "on";
     doc.publish = data.publish == "on";
     doc.edit_at = new Date();
-    doc.edit_by = user.userCtx.name;
+    doc.edit_by = userDoc.name;
     db.saveDoc(doc, {
       success : function(r) {
         router.go(getRedirectUrl());
@@ -160,7 +139,7 @@ var Focus = (function () {
   
   router.post("create", function(e) {
     var doc = {
-      created_by : user.userCtx.name,
+      created_by : userDoc.name,
       created_at : new Date(),
       profile    : userDoc["couch.app.profile"],
       publish    : true,
@@ -168,7 +147,7 @@ var Focus = (function () {
       state      : "now",
       type       : "task"
     };
-    doc.profile.name = user.userCtx.name;
+    doc.profile.name = userDoc.name;
     db.saveDoc(doc, {
       success : function(r) {
         $("#message").val("");
@@ -179,22 +158,12 @@ var Focus = (function () {
 
   router.post("select_workgroup", function (e, data) {
     var users = $.couch.db("_users");
-    users.saveDoc(setWorkGroup(userDoc, "focus-"+ data.workgroup), {
+    users.saveDoc(setWorkGroup(userDoc,"focus-" + data.workgroup), {
       success: function() {
         window.location.reload(true);
       }
     });
-  });
-  
-  router.post("restartsync", function () {
-    $(".syncstatus").addClass("working").find("div").text("Starting ...");
-    doSync(false);
-  });
-
-  router.post("pausesync", function() {
-    $(".syncstatus").addClass("working").find("div").text("Pausing ...");
-    doSync(true);
-  });
+  });  
   
   router.post("sync", function (e, data) {
     if (!userDoc.focus) {
@@ -281,11 +250,10 @@ var Focus = (function () {
 
   function replicate(source, target, continous, callback) {
     
-    var opts = {create_target:true};
-    if (continous) {
-      opts.continous = true;
-    }
+    var opts = (continous ? {continous:true} : {});
+    
     $.couch.replicate(source, target, opts, {
+      create_target : true,
       error: function() {
         console.log(arguments);
       },
@@ -315,29 +283,6 @@ var Focus = (function () {
       + x.server + "/" + x.workgroup;
   };
   
-  function doSync(cancel) {
-    
-    var u = getSyncDetails(),
-        remote = "http://" + u.name + ":" + u.password + "@"
-      + u.server + "/" + u.workgroup;
-    
-    var syncFromObj = {source:remote, target:u.workgroup, continuous:true};
-    if (cancel) {
-      syncFromObj.cancel = true;
-    }
-    var syncToObj = {source:u.workgroup, target:remote,
-                     continuous:true, create_target:true};
-    if (cancel) {
-      syncToObj.cancel = true;
-    }
-    
-    postSync(syncToObj, function(d1) {
-      postSync(syncFromObj, function(d2) {
-        router.refresh();
-      });
-    });
-  };
-  
   function setWorkGroup(obj, workgroup) {
     obj.apps = obj.apps || {};
     obj.apps.focus = obj.apps.focus || {
@@ -349,23 +294,6 @@ var Focus = (function () {
     obj.apps.focus.workGroups.push(workgroup);
 
     return obj;
-  };
-  
-  function postSync(obj, callback) { 
-    $.ajax({
-      type        : "POST",
-      url         : urlPrefix + "_replicate",
-      contentType : "application/json",
-      dataType    : "json",
-      data        : JSON.stringify(obj),
-      error       : function() {
-        notifyMsg("Error Starting Sync");
-        router.refresh();
-      },
-      success     : function(data) {
-        callback(data);
-      }
-    });
   };
   
   function getSyncDetails() {
@@ -393,16 +321,14 @@ var Focus = (function () {
       data.edit_at    = data.edit_at && prettyDate(new Date(data.edit_at))||"";
       data.users      = selectUsers(data.profile.name);
       data.states     = states(data.state);
-      render("#content", "#edit_tpl", data);
-      $("textarea[name=message]")[0].focus();
+      render("#edit_tpl", data);
     });
   };
 
   function getProfile(name) {
     for (var tmp = [], i = 0; i < profiles.length; i += 1) {
       if (name === profiles[i].profile.name) {
-        return profiles[i].profile;
-      }
+        return profiles[i].profile;}
     }
     return false;
   }; 
@@ -411,7 +337,7 @@ var Focus = (function () {
     fetchList("done", name, function(done) {
       fetchList("now", name, function(now) {
         fetchList("later", name, function(later) {      
-          var isSelf    = name === user.userCtx.name,
+          var isSelf    = name === userDoc.name,
               tmpRender = function(view) {
                 return Mustache.to_html($("#items_tpl").html(), {
                   urlPrefix : prefix,
@@ -419,7 +345,7 @@ var Focus = (function () {
                 });
               };
           
-          render("#content", "#overview_tpl", {
+          render("#overview_tpl", {
             profile : isSelf ? false : getProfile(name),
             done    : tmpRender(done),
             now     : tmpRender(now),
@@ -445,10 +371,10 @@ var Focus = (function () {
 
   function isEmpty(obj) {
     for(var prop in obj) {
-      if(obj.hasOwnProperty(prop))
+      if(obj.hasOwnProperty(prop)) { 
         return false;
+      }
     }
-    
     return true;
   };
   
@@ -487,7 +413,7 @@ var Focus = (function () {
         };
     
     fetch(view, args, function(data) {
-      render("#content", "#items_tpl", {
+      render("#items_tpl", {
         title     : "Viewing '" + pre + key + "'",
         items     : viewToList(data),
         urlPrefix : "/" + view + "/" + key
@@ -564,11 +490,10 @@ var Focus = (function () {
     if (verb === "GET") {
 
       $("body").removeClass("editing");
-      $("#content").addClass("loading");
-        
+      
       // nasty way of figuring out what nav should be highlighted
       // can do a nicer way
-      var selected = (url === "!")   ? "navmine" :
+      var selected = (url === "!")    ? "navmine" :
         (url.indexOf("focus") !== -1) ? "navall" : 
         (url.indexOf("team") !== -1)  ? "navteam" : 
         (url.indexOf("sync") !== -1)  ? "navshare" : 
@@ -582,9 +507,10 @@ var Focus = (function () {
       if(!ensureLoggedIn(verb, url, args)) {
         return false;
       } else if (userDoc && userDoc["couch.app.profile"] === undefined) {
-        render("#content", "#edit_profile");
+        render("#edit_profile");
         return false;
       }
+      showNav = true;
       return true;
     } else {
       return ensureLoggedIn(verb, url, args);
@@ -592,7 +518,7 @@ var Focus = (function () {
   };
   
   function ensureLoggedIn(verb, url, args) {
-    if (verb === 'GET' && user === null && !anonAccess(url)) {
+    if (verb === 'GET' && userDoc === null && !anonAccess(url)) {
       renderSignup();
       return false;
     }
@@ -600,61 +526,70 @@ var Focus = (function () {
   };
 
   function renderSignup() {
-    var data = !isMobile ? {} : {
+    render("#signup", (!isMobile ? {} : {
       display_pass : "style='display:none'",
       password     : mobilePass
-    };
-    render("#content", "#signup", data);
+    }));
   };
   
-  function render(dom, tpl, data) {
-    $("#content").removeClass("loading");
-    $(dom).html(Mustache.to_html($(tpl).html(), data));
+  function render(tpl, data) {
+    if (showNav) {
+      $("header, #footer").show();        
+    } else {
+      $("header, #footer").hide();
+    }
+    $("#content").html(Mustache.to_html($(tpl).html(), data));
+    $("#contentwrapper").removeClass("loading");
   };
   
   function cloneObj(obj) {
     return jQuery.extend(true, {}, obj);
   };
-  
-  function loadUser() {
-    
-    $.getJSON(urlPrefix + "_session/", function (data) {
-      
-      adminParty = (data.userCtx.name === null &&
-                    data.userCtx.roles.indexOf("_admin") !== -1);
-      
-      if (data.userCtx && data.userCtx.name !== null) {
-        
-        user = data;
-        $("header, #footer").show();
-        
-        $.couch.db("_users").openDoc("org.couchdb.user:" + user.userCtx.name, {
-          success: function (userObj) {            
-            userDoc = userObj;
-            db = $.couch.db(dbName);
-            loadUsers(router.init);
-            initComet();
-          }
-        });
-      } else if (isMobile) {
 
-        // Mobile Browsers will be logged in automatically
-        $.couch.db("_users").allDocs({          
-          include_docs:true,
-          success: function(data) {
-            if (data.rows.length > 1) {
-              $.couch.login({
-                name     : data.rows[1].doc.name,
-                password : mobilePass,
-                success  : function() { window.location.reload(true); }
-              });
-            } else {
-              router.init();
-            }
-          }
-        });
-      } else {
-        router.init();
+  function isAdminParty(obj) {
+    return obj.userCtx.name === null &&
+      obj.userCtx.roles.indexOf("_admin") !== -1;
+  };
+
+  function loadUser(name) {
+    $.couch.db("_users").openDoc("org.couchdb.user:" + name, {
+      success: function (userObj) {            
+        userDoc = userObj;
+        loadUsers(router.init);
+        initComet();
+      }
+    });
+  };
+
+  // Mobile users are automatically logged in
+  function autoLogin() {
+    $.couch.db("_users").allDocs({          
+      include_docs: true,
+      success: function (data) {
+        if (data.rows.length > 1) {
+          $.couch.login({
+            name     : data.rows[1].doc.name,
+            password : mobilePass,
+            success  : function () { loadUser(data.rows[1].doc.name); }
+          });
+        } else {
+          router.init();
+        }
+      }
+    });
+  };
+  
+  function checkSession() {
+    $.couch.session({
+      success : function (data) {
+        adminParty = isAdminParty(data);
+        if (data.userCtx.name !== null) {
+          loadUser(data.userCtx.name);
+        } else if (isMobile) {
+          autoLogin();
+        } else {
+          router.init();
+        }
       }
     });
   };
@@ -664,20 +599,17 @@ var Focus = (function () {
       for (var keys = [], i = 0; i < users.rows.length; i += 1) {
         keys.push(users.rows[i].value);
       }
-      
-      $.ajax({
-        type        : "POST",
-        url         : urlPrefix + dbName + "/_all_docs?include_docs=true",
-        contentType : "application/json",
-        dataType    : "json",
-        data        : JSON.stringify({keys:keys}),
-        success     : function(data) {
+
+      db.allDocs({
+        keys : keys,
+        include_docs : true,
+        success : function (data) {
           for (i = 0; i < data.rows.length; i += 1) {
             profiles.push(data.rows[i].doc);
           }
           callback();
         }
-      });      
+      });
     });
   };  
   
@@ -704,33 +636,34 @@ var Focus = (function () {
   function initComet() { 
     db.info({
       "success": function (data) {
-        setTimeout(function () { badComet(data.update_seq); }, 100);
+        badComet(data.update_seq);
       }
     });
   };
 
   function isMobile() {
     return navigator.userAgent.toLowerCase()
-      .match(/(andoid|iphone|ipod)/) !== null;
+      .match(/(andoid|iphone|ipod|ipad)/) !== null;
   };
     
   // I dont like these global events, they are bound to the page permanently
   // so may cause conflicts
-  function bindEvents() {
+  function bindDomEvents() {
     
     $(document).bind("mousedown", function (e) {
-      var item = $(e.target).is("div.item")
-        ? $(e.target)
-        : $(e.target).parents("div.item");
-      if (e.target.nodeName !== "A" && item.length !== 0) {
+      
+      var $obj = $(e.target),
+          item = $obj.is("div.item") ? $obj : $obj.parents("div.item");
+      
+      if ($obj.not("a") && item.length !== 0) {
         router.go(document.location.hash + "/edit/" + item.attr("data-id"));
-      } else if ($(e.target).is("input[name=delete]")) {
+      } else if ($obj.is("input[name=delete]")) {
         $("#deleteform").submit();
-      } else if ($(e.target).is("button.syncbtn")) {
-        $("#syncaction").val($(e.target).attr("data-action"));
+      } else if ($obj.is("button.syncbtn")) {
+        $("#syncaction").val($obj.attr("data-action"));
       }
     });
-
+    
     $(document).bind("change", function(e) {
       $("#avapreview").attr("src", getProfile($(e.target).val()).gravatar_url);
     });
@@ -747,8 +680,14 @@ var Focus = (function () {
     });
   };
   
-  window.onload = function () { setTimeout(loadUser, 500); };
-    
-  bindEvents();
+  bindDomEvents();
 
+  // TODO: Test for being inside webkit with browser chrome visible
+  // (gets rid of loading bar)
+  if (false) {
+    window.onload = function () { setTimeout(checkSession, 500); };
+  } else { 
+    checkSession();
+  }
+  
 })();

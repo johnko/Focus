@@ -8,6 +8,7 @@ body {
     background : #E5E5E5;
     font       : 1em sans-serif;
     overflow-y : scroll;
+    padding-bottom : 30px;
 }
 
 h1 { 
@@ -223,7 +224,7 @@ div.avatar img {
 
 #messagewrapper {
     position  : absolute;
-    right     : 67px;
+    right     : 87px;
     left      : 9px;
     top       : 8px;    
     height    : 30px;
@@ -237,6 +238,7 @@ div.avatar img {
     padding   : 5px;
     -webkit-box-sizing : border-box;
     -moz-box-sizing    : border-box;
+    -webkit-border-radius:0px;
 }
 
 select { 
@@ -245,7 +247,7 @@ select {
 
 #notify { 
     position   : fixed; 
-    bottom     : 20px; 
+    bottom     : 40px; 
     left       : 20px;
     right      : 20px;
     padding    : 20px 10px;
@@ -262,7 +264,7 @@ select {
 }
 
 #createbtn { 
-    width:60px;
+    width:80px;
     position  : absolute;
     right     : 8px;
     top       : 8px;
@@ -453,6 +455,7 @@ label.checkbox {
 }
 
 #footer {
+    display:none !important;
     background : white;
     padding    : 10px;
     color      : #999;
@@ -726,17 +729,22 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 #syncbtns button:last-child {
     -moz-border-radius-topleft:0px;
     -moz-border-radius-bottomleft:0px;
+    -webkit-border-radius-topleft:0px;
+    -webkit-border-radius-bottomleft:0px;
 }
 #syncbtns button:first-child {
     -moz-border-radius-topright:0px;
     -moz-border-radius-bottomright:0px;
+    -webkit-border-radius-topright:0px;
+    -webkit-border-radius-bottomright:0px;
 }
 
-#syncbtns { 
+#Syncbtns { 
     overflow:auto;
 }
 #syncbtns .middle {
     border-width:1px 0 1px 0;
     -moz-border-radius:0px;
+    -webkit-border-radius:0px;
     width:34%;
 } 

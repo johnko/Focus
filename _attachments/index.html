@@ -28,20 +28,16 @@
 
     <div id="notify"></div>
 
-    <div id="content" class="loading">&nbsp;</div>
-    
+    <div id="contentwrapper" class="loading">
+      <div id="content">&nbsp;</div>
+    </div>
+
     <div id="footer">
       <a href="#!/logout">Logout</a>
     </div>
 
     <script type="text/html" id="sync_tpl">
-      
-      <!-- <form action="{{action}}" class="startsync"> -->
-      <!--   <button type="submit" {{disabled}} class="syncstatus {{cssClass}}"> -->
-      <!--     <div class="statusicon">{{status}}</div> -->
-      <!--   </button> -->
-      <!-- </form> -->
-      
+
       <form action="#sync" id="syncform" class="mainform">
         <fieldset class="first">
           <label>Server
