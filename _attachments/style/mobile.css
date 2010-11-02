@@ -625,7 +625,8 @@ h3 #content {
     vertical-align : middle;
 }
 
-#editform .btns { 
+.btns {
+    margin:20px 0px;
     text-align:center;
 }
 .btns .btn {
@@ -739,7 +740,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
     -webkit-border-radius-bottomright:0px;
 }
 
-#Syncbtns { 
+#syncbtns { 
     overflow:auto;
 }
 #syncbtns .middle {

@@ -41,24 +41,21 @@ var Focus = (function () {
 
   router.get("!/sync", function () {
     var details = getSyncDetails();
-    if (isEmpty(details)) {
-      render("#sync_tpl", {});
-    } else {
-      $.couch.activeTasks({
-        success : function (data) {
-          if (data.length !== 0) {
-            // Check the replications are for this instance
-            details.cssClass = "running";
-          } else {
-            details.cssClass = "paused";
-          }
-          render("#sync_tpl", details);
-        },
-        error : function () {
-          render("#sync_denied");
+    $.couch.activeTasks({
+      success : function (data) {
+        if (data.length >= 2) {
+          // Check the replications are for this instance (if possible)
+          details.cssClass = "running";
+        } else {
+          details.cssClass = "paused";
         }
-      });
-    }
+        details.workgroup = details.workgroup || "focus";
+        render("#sync_tpl", details);
+      },
+      error : function () {
+        render("#sync_denied");
+      }
+    });
   });
   
   router.get("!/team/:name", function (name) {
@@ -669,14 +666,15 @@ var Focus = (function () {
     });
     
     $("input").live("blur", function (e) {
-      if ($(e.target).attr("id") === "signup_email") {
+      var $name = $("#signup_name"), $obj = $(e.target);
+      if ($obj.attr("id") === "signup_email") {
         $("#gravatar_preview")
           .attr("src", 'http://www.gravatar.com/avatar/'
-                + hex_md5($(e.target).val()) + '.jpg?s=40&d=identicon');
-        if ($("#signup_name").val() === "") {
-          $("#signup_name").val($(e.target).val().split("@")[0]);
+                + hex_md5($obj.val()) + '.jpg?s=40&d=identicon');
+        if ($name.val() === "") {
+          $name.val($obj.val().split("@")[0]);
         }
-      }
+      } 
     });
   };
   
