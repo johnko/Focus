@@ -573,7 +573,8 @@ var Focus = (function () {
           $.couch.login({
             name     : data.rows[1].doc.name,
             password : mobilePass,
-            success  : function () { loadUser(data.rows[1].doc.name); }
+            success  : function () {
+            }
           });
         } else {
           router.init();
@@ -647,7 +648,7 @@ var Focus = (function () {
 
   function isMobile() {
     return navigator.userAgent.toLowerCase()
-      .match(/(andoid|iphone|ipod|ipad)/) !== null;
+      .match(/(android|iphone|ipod|ipad)/) !== null;
   };
     
   // I dont like these global events, they are bound to the page permanently
