@@ -28,7 +28,7 @@ var Focus = (function () {
   router.get(/edit\/([a-z0-9]+)$/, createEdit);
 
   router.get(/^(!)?$/, function () {
-    showUser("", userDoc.name);
+    showUser(/^(!)?$/, "", userDoc.name);
   });
   
   router.get("!/logout", function (id) {
@@ -50,16 +50,16 @@ var Focus = (function () {
           details.cssClass = "paused";
         }
         details.workgroup = details.workgroup || "focus";
-        render("#sync_tpl", details);
+        renderIfUrl("!/sync", "#sync_tpl", details);
       },
       error : function () {
-        render("#sync_denied");
+        renderIfUrl("!/sync", "#sync_denied");
       }
     });
   });
   
   router.get("!/team/:name", function (name) {
-    showUser("/team/" + name, name);
+    showUser("!/team/:name", "/team/" + name, name);
   });
 
   router.get("!/signup", function () {
@@ -80,12 +80,12 @@ var Focus = (function () {
   });
 
   router.get("!/team", function () {
-    render("#users_tpl", {users:profiles});
+    renderIfUrl("!/team", "#users_tpl", {users:profiles});
   });
 
   router.get("!/focus", function () {
     fetch("focus-time", {descending:true, limit:25}, function(data) {
-      render("#items_tpl", {
+      renderIfUrl("!/focus", "#items_tpl", {
         title     : "Focus View",
         items     : viewToList(data),
         urlPrefix : "/focus"
@@ -100,7 +100,7 @@ var Focus = (function () {
   router.get("!/tags", function () {
     fetch("mentions", {group_level:1}, function(mentions) {
       fetch("tags", {group_level:1}, function(tags) {
-        render("#tags_tpl", {
+        renderIfUrl("!/tags", "#tags_tpl", {
           tags :     sizeUp(tags.rows),
           mentions : sizeUp(mentions.rows)
         });
@@ -330,7 +330,7 @@ var Focus = (function () {
     return false;
   }; 
   
-  function showUser(prefix, name) {
+  function showUser(urlCheck, prefix, name) {
     fetchList("done", name, function(done) {
       fetchList("now", name, function(now) {
         fetchList("later", name, function(later) {      
@@ -342,7 +342,7 @@ var Focus = (function () {
                 });
               };
           
-          render("#overview_tpl", {
+          renderIfUrl(urlCheck, "#overview_tpl", {
             profile : isSelf ? false : getProfile(name),
             done    : tmpRender(done),
             now     : tmpRender(now),
@@ -490,7 +490,7 @@ var Focus = (function () {
       
       // nasty way of figuring out what nav should be highlighted
       // can do a nicer way
-      var selected = (url === "!")    ? "navmine" :
+      var selected = (url === "!" || url === "") ? "navmine" :
         (url.indexOf("focus") !== -1) ? "navall" : 
         (url.indexOf("team") !== -1)  ? "navteam" : 
         (url.indexOf("sync") !== -1)  ? "navshare" : 
@@ -527,6 +527,12 @@ var Focus = (function () {
       display_pass : "style='display:none'",
       password     : mobilePass
     }));
+  };
+
+  function renderIfUrl(url, tpl, data) {
+    if (router.matchesCurrent(url)) { 
+      render(tpl, data);
+    }
   };
   
   function render(tpl, data) {
@@ -620,8 +626,9 @@ var Focus = (function () {
         if (data) { 
           xhrCache = {};
           docCache = {};
+          var hash = window.location.hash;
           // Bit of a hack, dont refresh the form while people are editing
-          if (window.location.hash.indexOf("/edit/") === -1) {
+          if (hash.indexOf("/edit/") === -1 || hash.indexOf("/sync") === -1) {
             router.refresh(true);
           }
           badComet(data.last_seq);

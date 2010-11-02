@@ -40,15 +40,16 @@ var Router = (function() {
     document.location.hash = url;
     window.scrollTo(0,0);
   };
-  
-  function route(verb, path, cb) {
-    
-    path = (path.constructor == String)
+
+  function toRegex(path) {
+    return (path.constructor == String)
       ? new RegExp("^"+path.replace(PATH_MATCHER, PATH_REPLACER)+"$")
       : path;
-    
+  };
+  
+  function route(verb, path, cb) {
     routes[verb].push({
-      path     : path,
+      path     : toRegex(path),
       callback : cb
     });
   };
@@ -91,6 +92,10 @@ var Router = (function() {
     }
   };
 
+  function matchesCurrent(needle) {
+    return window.location.hash.slice(1).match(toRegex(needle));
+  };
+    
   function matchPath(verb, path) {
     var i, tmp, arr = routes[verb];
     for (i = 0; i < arr.length; i += 1) {
@@ -123,6 +128,7 @@ var Router = (function() {
     get     : get,
     post    : post,
     init    : init,
+    matchesCurrent : matchesCurrent,
     pre     : preRouter,
     refresh : refresh,
     error404 : error404
