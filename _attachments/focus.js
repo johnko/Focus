@@ -146,7 +146,7 @@ var Focus = (function () {
       type       : "task"
     };
 
-    if (avatars[userDoc.name]) { 
+    if (avatars[doc.profile.email]) { 
       doc.profile.gravatar_url = "../../" + doc.profile.email +
         "_gravatar/avatar.png";
     }
@@ -568,8 +568,9 @@ var Focus = (function () {
       img.onload = function() {
         var canvas = document.createElement("canvas"),
             ctx = canvas.getContext("2d"), 
-            w = 40,//img.width,
-            h = 40;//img.height;
+            w = img.width,
+            h = img.height;
+        $(canvas).attr('width', w).attr('height', h);
         ctx.width = w;
         ctx.height = h;
         ctx.drawImage(img, 0, 0, w, h);
