@@ -332,7 +332,6 @@ var Focus = (function () {
   function getProfile(name) {
     for (var tmp = [], i = 0; i < profiles.length; i += 1) {
       if (name === profiles[i].profile.name) {
-        console.log(profiles[i].profile);
         return profiles[i].profile; 
       } 
       return false;
