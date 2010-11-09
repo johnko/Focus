@@ -7,6 +7,7 @@ var Focus = (function () {
       isMobile   = isMobile(),
       router     = new Router(),
       userDoc    = null,
+      avatars    = {},
       profiles   = [],
       showNav    = false,
       db         = $.couch.db(dbName);
@@ -144,12 +145,18 @@ var Focus = (function () {
       state      : "now",
       type       : "task"
     };
+
+    if (avatars[userDoc.name]) { 
+      doc.profile.gravatar_url = "../../" + doc.profile.email +
+        "_gravatar/avatar.png";
+    }
+
     doc.profile.name = userDoc.name;
     db.saveDoc(doc, {
-      success : function(r) {
-        $("#message").val("");
-        notifyMsg("Added new item");
-      }
+     success : function(r) {
+       $("#message").val("");
+       notifyMsg("Added new item");
+     }
     });
   });
 
@@ -325,9 +332,11 @@ var Focus = (function () {
   function getProfile(name) {
     for (var tmp = [], i = 0; i < profiles.length; i += 1) {
       if (name === profiles[i].profile.name) {
-        return profiles[i].profile;}
+        console.log(profiles[i].profile);
+        return profiles[i].profile; 
+      } 
+      return false;
     }
-    return false;
   }; 
   
   function showUser(urlCheck, prefix, name) {
@@ -554,9 +563,27 @@ var Focus = (function () {
       obj.userCtx.roles.indexOf("_admin") !== -1;
   };
 
+  function loadGravatar(path, callback) {
+    $.get('http://seivadnosaj.appspot.com/proxy', {url: path}, function(data) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement("canvas"),
+            ctx = canvas.getContext("2d"), 
+            w = 40,//img.width,
+            h = 40;//img.height;
+        ctx.width = w;
+        ctx.height = h;
+        ctx.drawImage(img, 0, 0, w, h);
+        var dataURL = canvas.toDataURL("image/png");
+        callback(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      };
+      img.src = data;
+    }, 'jsonp');
+  };
+  
   function loadUser(name) {
     $.couch.db("_users").openDoc("org.couchdb.user:" + name, {
-      success: function (userObj) {            
+      success: function (userObj) {
         userDoc = userObj;
         loadUsers(router.init);
         initComet();
@@ -573,8 +600,7 @@ var Focus = (function () {
           $.couch.login({
             name     : data.rows[1].doc.name,
             password : mobilePass,
-            success  : function () {
-            }
+            success  : function () {}
           });
         } else {
           router.init();
@@ -597,17 +623,40 @@ var Focus = (function () {
       }
     });
   };
-             
+  
   function loadUsers(callback) {
+    fetch("gravatars", {include_doc:true}, function(data) {
+      for (var i = 0; i < data.rows.length; i += 1) {
+        avatars[data.rows[i].value.email] = data.rows[i].value;
+      }
+      var profile = userDoc["couch.app.profile"];
+      if (profile && !avatars[profile.email]) {
+        loadGravatar(profile.gravatar_url, function (img) {
+          var obj = {
+            type  : "gravatar",
+            _id   : profile.email + "_gravatar",
+            email : profile.email,
+            _attachments : {
+              "avatar.png" : { 
+                data         : img,
+                content_type : "image\/png"
+              }
+            }
+          };
+          db.saveDoc(obj);
+        });
+      }
+    });
+
     fetch("user-created", {group:true}, function(users) {
       for (var keys = [], i = 0; i < users.rows.length; i += 1) {
         keys.push(users.rows[i].value);
       }
 
       db.allDocs({
-        keys : keys,
+        keys         : keys,
         include_docs : true,
-        success : function (data) {
+        success      : function (data) {
           for (i = 0; i < data.rows.length; i += 1) {
             profiles.push(data.rows[i].doc);
           }
