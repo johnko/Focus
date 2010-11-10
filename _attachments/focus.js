@@ -333,9 +333,9 @@ var Focus = (function () {
     for (var tmp = [], i = 0; i < profiles.length; i += 1) {
       if (name === profiles[i].profile.name) {
         return profiles[i].profile; 
-      } 
-      return false;
+      }
     }
+    return false;
   }; 
   
   function showUser(urlCheck, prefix, name) {
