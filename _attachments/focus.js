@@ -719,7 +719,10 @@ var Focus = (function () {
     });
     
     $(document).bind("change", function(e) {
-      $("#avapreview").attr("src", getProfile($(e.target).val()).gravatar_url);
+      if ($(e.target).attr("data-gravatar")) {
+        $("#avapreview")
+          .attr("src", getProfile($(e.target).val()).gravatar_url);
+      }
     });
     
     $("input").live("blur", function (e) {
