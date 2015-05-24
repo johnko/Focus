@@ -1,0 +1,18 @@
+{
+    "name": "focus",
+    "version": "0.0.1",
+    "realname": "Focus",
+    "description": "A CouchApp for keeping teams on the same page.",
+    "attachments": ["static"],
+    "load": "lib/app",
+    "modules": ["lib"],
+    "dependencies": {
+        "attachments": null,
+        "modules": null,
+        "properties": null,
+        "settings": null,
+        "kanso-topbar": null,
+        "users": null,
+        "session": null
+    }
+}

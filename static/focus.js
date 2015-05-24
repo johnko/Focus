@@ -11,34 +11,34 @@ var Focus = (function () {
       profiles   = [],
       showNav    = false,
       db         = $.couch.db(dbName);
-      
+
   var xhrCache = {},
       docCache = {};
 
   var selected = "selected='selected'";
-  
+
   router.pre(urlChange);
   router.error404(function (verb, url) {
-    if (verb === "GET") { 
+    if (verb === "GET") {
       render("#error404", {url:url});
     } else {
       console.error(verb, url);
     }
   });
-  
+
   router.get(/edit\/([a-z0-9]+)$/, createEdit);
 
   router.get(/^(!)?$/, function () {
     showUser(/^(!)?$/, "", userDoc.name);
   });
-  
+
   router.get("!/logout", function (id) {
     $.couch.logout({
       success : function() {
         document.location.href = "";
       }
     });
-  });  
+  });
 
   router.get("!/sync", function () {
     var details = getSyncDetails();
@@ -58,7 +58,7 @@ var Focus = (function () {
       }
     });
   });
-  
+
   router.get("!/team/:name", function (name) {
     showUser("!/team/:name", "/team/" + name, name);
   });
@@ -93,7 +93,7 @@ var Focus = (function () {
       });
     });
   });
-  
+
   router.get("!/(tags|mentions)/:tag", function (type, val) {
     showTagsOrMentions(type, val);
   });
@@ -105,10 +105,10 @@ var Focus = (function () {
           tags :     sizeUp(tags.rows),
           mentions : sizeUp(mentions.rows)
         });
-      });      
+      });
     });
   });
-  
+
   router.post("login", function (e, data) {
     $.couch.login({
       name     : data.email,
@@ -117,7 +117,7 @@ var Focus = (function () {
       error    : function() { notifyMsg("Invalid Login Credentials"); }
     });
   });
-  
+
   router.post("edit", function(e, data) {
     var doc = docCache[data._id];
     doc.message = data.message;
@@ -134,7 +134,7 @@ var Focus = (function () {
       }
     });
   });
-  
+
   router.post("create", function(e) {
     var doc = {
       created_by : userDoc.name,
@@ -146,8 +146,8 @@ var Focus = (function () {
       type       : "task"
     };
 
-    if (avatars[doc.profile.email]) { 
-      doc.profile.gravatar_url = "../../" + doc.profile.email +
+    if (avatars[doc.profile.email]) {
+      doc.profile.gravatar_url = "./_db/" + doc.profile.email +
         "_gravatar/avatar.png";
     }
 
@@ -167,8 +167,8 @@ var Focus = (function () {
         window.location.reload(true);
       }
     });
-  });  
-  
+  });
+
   router.post("sync", function (e, data) {
     if (!userDoc.focus) {
       userDoc.focus = {};
@@ -193,21 +193,21 @@ var Focus = (function () {
       replicate(data.workgroup, remoteSyncUrl(), false, function () {
         $button.removeClass("working");
         notifyMsg("Replication Complete");
-      });      
+      });
     } else if (data.action === "sync") {
       replicate(data.workgroup, remoteSyncUrl(), true, function () {
         window.location.reload(true);
       });
     }
   });
-  
+
   router.post("delete", function (e, data) {
     db.removeDoc({_id: data._id, _rev: data._rev}, {
       success: function() {
         notifyMsg("deleted");
         router.go(getRedirectUrl());
       }
-    });  
+    });
   });
 
   router.post("save_profile", function (e, data) {
@@ -216,17 +216,17 @@ var Focus = (function () {
       success: function() { window.location.reload(true); }
     });
   });
-  
+
   router.post("signup", function (e, data) {
 
     data.password = isMobile ? mobilePass : data.password;
-    
+
     var workgroup = "focus",
         user = {
           name : data.email,
           "couch.app.profile" : makeCouchAppProfile(data.name, data.email)
         };
-    
+
     var signUp = function() {
       $.couch.signup(user, data.password, {
         success: function() {
@@ -234,12 +234,12 @@ var Focus = (function () {
             name     : data.email,
             password : data.password,
             success  : function() { window.location.reload(true); }
-          }); 
+          });
         }
       });
     };
-    
-    if (adminParty) { 
+
+    if (adminParty) {
       $.ajax({
         type        : "PUT",
         url         : urlPrefix + "_config/admins/" + data.email,
@@ -253,9 +253,9 @@ var Focus = (function () {
   });
 
   function replicate(source, target, continous, callback) {
-    
+
     var opts = (continous ? {continous:true} : {});
-    
+
     $.couch.replicate(source, target, opts, {
       create_target : true,
       error: function() {
@@ -270,7 +270,7 @@ var Focus = (function () {
       }
     });
   };
-  
+
   function makeCouchAppProfile(name, email) {
     return {
       rand         : Math.random().toString(),
@@ -280,42 +280,42 @@ var Focus = (function () {
         hex_md5(email) + '.jpg?s=40&d=identicon'
     };
   };
-  
+
   function remoteSyncUrl() {
     var x = getSyncDetails();
     return "http://" + x.name + ":" + x.password + "@"
       + x.server + "/" + x.workgroup;
   };
-  
+
   function setWorkGroup(obj, workgroup) {
     obj.apps = obj.apps || {};
     obj.apps.focus = obj.apps.focus || {
       workGroups        : [],
       selectedWorkGroup : null
     };
-    
+
     obj.apps.focus.selectedWorkGroup = workgroup;
     obj.apps.focus.workGroups.push(workgroup);
 
     return obj;
   };
-  
+
   function getSyncDetails() {
     return userDoc.focus && userDoc.focus.syncDetails || {};
   };
-  
+
   function getRedirectUrl() {
     var arr = window.location.hash.split("/");
     arr.pop();
     arr.pop();
     return arr.join("/");
   };
-  
+
   function notifyMsg(msg) {
     $("#notify").html('<span/>').html(msg).show();
-    setTimeout(function() { $("#notify").fadeOut(); }, 500);    
+    setTimeout(function() { $("#notify").fadeOut(); }, 500);
   };
-  
+
   function createEdit(id) {
     $("body").addClass("editing");
     fetchId(id, function(data) {
@@ -332,16 +332,16 @@ var Focus = (function () {
   function getProfile(name) {
     for (var tmp = [], i = 0; i < profiles.length; i += 1) {
       if (name === profiles[i].profile.name) {
-        return profiles[i].profile; 
+        return profiles[i].profile;
       }
     }
     return false;
-  }; 
-  
+  };
+
   function showUser(urlCheck, prefix, name) {
     fetchList("done", name, function(done) {
       fetchList("now", name, function(now) {
-        fetchList("later", name, function(later) {      
+        fetchList("later", name, function(later) {
           var isSelf    = name === userDoc.name,
               tmpRender = function(view) {
                 return Mustache.to_html($("#items_tpl").html(), {
@@ -349,7 +349,7 @@ var Focus = (function () {
                   items     : viewToList(view, isSelf)
                 });
               };
-          
+
           renderIfUrl(urlCheck, "#overview_tpl", {
             profile : isSelf ? false : getProfile(name),
             done    : tmpRender(done),
@@ -360,7 +360,7 @@ var Focus = (function () {
       });
     });
   }
-  
+
   function fetchList(list, name, cb) {
     var args = (list === "done") ?
       { descending : true,
@@ -376,20 +376,20 @@ var Focus = (function () {
 
   function isEmpty(obj) {
     for(var prop in obj) {
-      if(obj.hasOwnProperty(prop)) { 
+      if(obj.hasOwnProperty(prop)) {
         return false;
       }
     }
     return true;
   };
-  
+
   function daysAgo(days) {
     var d = new Date();
     return new Date(
       new Date((d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear())
                - (24 * 60 * 60 * days * 1000));
   };
-  
+
   function viewToList(data, isSelf) {
     for (var obj, tmp = [], i = 0; i < data.rows.length; i += 1) {
       obj = data.rows[i].value;
@@ -399,14 +399,14 @@ var Focus = (function () {
       obj.published = obj.publish ? "published" : "unpublished";
       obj.blocked   = obj.blocked ? "blocked" : "";
       obj.isSelf    = isSelf ? "isSelf" : "isNotSelf";
-      
+
       if (isSelf || (!isSelf && obj.publish)) {
         tmp.push(obj);
       }
     }
     return tmp;
   };
-      
+
   function showTagsOrMentions(view, key) {
 
     var pre  = (view === "tags") ? "#" : "@",
@@ -416,7 +416,7 @@ var Focus = (function () {
           endkey     : JSON.stringify([key]),
           startkey   : JSON.stringify([key, {}])
         };
-    
+
     fetch(view, args, function(data) {
       render("#items_tpl", {
         title     : "Viewing '" + pre + key + "'",
@@ -425,7 +425,7 @@ var Focus = (function () {
       });
     });
   };
-  
+
   function selectUsers(name) {
     for (var tmp = [], i = 0; i < profiles.length; i += 1) {
       tmp.push({
@@ -436,7 +436,7 @@ var Focus = (function () {
     }
     return tmp;
   };
-  
+
   function states(current) {
     var states = ["done", "now", "later"];
     for (var arr = [], i = 0; i < states.length; i += 1) {
@@ -447,7 +447,7 @@ var Focus = (function () {
     }
     return arr;
   };
-  
+
   function sizeUp(arr) {
     for (var size, tmp = [], i = 0; i < arr.length; i += 1) {
         size = arr[i].value;
@@ -469,12 +469,12 @@ var Focus = (function () {
       callback(cloneObj(docCache[id]));
     }
   };
-  
+
   function fetch(view, opts, callback) {
 
     var id = view + JSON.stringify(opts),
         url = urlPrefix + dbName + "/_design/focus/_view/" + view;
-    
+
     if (typeof xhrCache[id] === "undefined") {
       opts.random = new Date().getTime();
       $.get(url, opts, function (data) {
@@ -489,26 +489,26 @@ var Focus = (function () {
   function anonAccess(url) {
     return url === "!/signup" || url === "!/login";
   };
-  
+
   function urlChange(verb, url, args) {
 
     if (verb === "GET") {
 
       $("body").removeClass("editing");
-      
+
       // nasty way of figuring out what nav should be highlighted
       // can do a nicer way
       var selected = (url === "!" || url === "") ? "navmine" :
-        (url.indexOf("focus") !== -1) ? "navall" : 
-        (url.indexOf("team") !== -1)  ? "navteam" : 
-        (url.indexOf("sync") !== -1)  ? "navshare" : 
+        (url.indexOf("focus") !== -1) ? "navall" :
+        (url.indexOf("team") !== -1)  ? "navteam" :
+        (url.indexOf("sync") !== -1)  ? "navshare" :
         (url.indexOf("tags") !== -1)  ? "navtags" : false;
-      
+
       $(".selected").removeClass("selected");
       if (selected) {
         $("." + selected).addClass("selected");
       }
-      
+
       if(!ensureLoggedIn(verb, url, args)) {
         return false;
       } else if (userDoc && userDoc["couch.app.profile"] === undefined) {
@@ -521,7 +521,7 @@ var Focus = (function () {
       return ensureLoggedIn(verb, url, args);
     }
   };
-  
+
   function ensureLoggedIn(verb, url, args) {
     if (verb === 'GET' && userDoc === null && !anonAccess(url)) {
       renderSignup();
@@ -538,21 +538,21 @@ var Focus = (function () {
   };
 
   function renderIfUrl(url, tpl, data) {
-    if (router.matchesCurrent(url)) { 
+    if (router.matchesCurrent(url)) {
       render(tpl, data);
     }
   };
-  
+
   function render(tpl, data) {
     if (showNav) {
-      $("header, #footer").show();        
+      $("header, #footer").show();
     } else {
       $("header, #footer").hide();
     }
     $("#content").html(Mustache.to_html($(tpl).html(), data));
     $("#contentwrapper").removeClass("loading");
   };
-  
+
   function cloneObj(obj) {
     return jQuery.extend(true, {}, obj);
   };
@@ -567,7 +567,7 @@ var Focus = (function () {
       var img = new Image();
       img.onload = function() {
         var canvas = document.createElement("canvas"),
-            ctx = canvas.getContext("2d"), 
+            ctx = canvas.getContext("2d"),
             w = img.width,
             h = img.height;
         $(canvas).attr('width', w).attr('height', h);
@@ -580,7 +580,7 @@ var Focus = (function () {
       img.src = data;
     }, 'jsonp');
   };
-  
+
   function loadUser(name) {
     $.couch.db("_users").openDoc("org.couchdb.user:" + name, {
       success: function (userObj) {
@@ -593,7 +593,7 @@ var Focus = (function () {
 
   // Mobile users are automatically logged in
   function autoLogin() {
-    $.couch.db("_users").allDocs({          
+    $.couch.db("_users").allDocs({
       include_docs: true,
       success: function (data) {
         if (data.rows.length > 1) {
@@ -608,7 +608,7 @@ var Focus = (function () {
       }
     });
   };
-  
+
   function checkSession() {
     $.couch.session({
       success : function (data) {
@@ -623,7 +623,7 @@ var Focus = (function () {
       }
     });
   };
-  
+
   function loadUsers(callback) {
     fetch("gravatars", {include_doc:true}, function(data) {
       for (var i = 0; i < data.rows.length; i += 1) {
@@ -637,7 +637,7 @@ var Focus = (function () {
             _id   : profile.email + "_gravatar",
             email : profile.email,
             _attachments : {
-              "avatar.png" : { 
+              "avatar.png" : {
                 data         : img,
                 content_type : "image\/png"
               }
@@ -664,8 +664,8 @@ var Focus = (function () {
         }
       });
     });
-  };  
-  
+  };
+
   function badComet(seq) {
     $.ajax({
       url      : urlPrefix + dbName + "/_changes",
@@ -673,7 +673,7 @@ var Focus = (function () {
       method   : "GET",
       dataType : "json",
       success  : function(data) {
-        if (data) { 
+        if (data) {
           xhrCache = {};
           docCache = {};
           var hash = window.location.hash;
@@ -687,7 +687,7 @@ var Focus = (function () {
     });
   };
 
-  function initComet() { 
+  function initComet() {
     db.info({
       "success": function (data) {
         badComet(data.update_seq);
@@ -699,16 +699,16 @@ var Focus = (function () {
     return navigator.userAgent.toLowerCase()
       .match(/(android|iphone|ipod|ipad)/) !== null;
   };
-    
+
   // I dont like these global events, they are bound to the page permanently
   // so may cause conflicts
   function bindDomEvents() {
-    
-    $(document).bind("mousedown", function (e) {
-      
+
+    $(document).bind("click", function (e) {
+
       var $obj = $(e.target),
           item = $obj.is("div.item") ? $obj : $obj.parents("div.item");
-      
+
       if ($obj.not("a") && item.length !== 0) {
         router.go(document.location.hash + "/edit/" + item.attr("data-id"));
       } else if ($obj.is("input[name=delete]")) {
@@ -717,14 +717,14 @@ var Focus = (function () {
         $("#syncaction").val($obj.attr("data-action"));
       }
     });
-    
+
     $(document).bind("change", function(e) {
       if ($(e.target).attr("data-gravatar")) {
         $("#avapreview")
           .attr("src", getProfile($(e.target).val()).gravatar_url);
       }
     });
-    
+
     $("input").live("blur", function (e) {
       var $name = $("#signup_name"), $obj = $(e.target);
       if ($obj.attr("id") === "signup_email") {
@@ -734,18 +734,18 @@ var Focus = (function () {
         if ($name.val() === "") {
           $name.val($obj.val().split("@")[0]);
         }
-      } 
+      }
     });
   };
-  
+
   bindDomEvents();
 
   // TODO: Test for being inside webkit with browser chrome visible
   // (gets rid of loading bar)
   if (false) {
     window.onload = function () { setTimeout(checkSession, 500); };
-  } else { 
+  } else {
     checkSession();
   }
-  
+
 })();

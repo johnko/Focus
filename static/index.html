@@ -3,7 +3,7 @@
   <head>
     <title>Focus - collaborative messaging for distributed teams</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"/>
-    <link rel="stylesheet" href="style/mobile.css" type="text/css">
+    <link rel="stylesheet" href="./static/style/mobile.css" type="text/css">
   </head>
 
   <body>
@@ -16,10 +16,10 @@
         <li><a href="#!/tags" class="navtags">Tags</a></li>
         <li><a href="#!/sync" class="navshare">Share</a></li>
       </ul>
-      
+
       <form id="create" class="clearfix" action="#create">
         <div id="messagewrapper">
-          <input type="text" name="message" id="message" 
+          <input type="text" name="message" id="message"
                  placeholder="What am I working on?" value="" />
         </div>
         <input type="submit" class="btn" id="createbtn" value="Create" />
@@ -53,19 +53,19 @@
         </fieldset>
         <fieldset>
           <label>Server
-            <span><input type="text" name="server" value="{{server}}" 
+            <span><input type="text" name="server" value="{{server}}"
                          placeholder="example.com" /></span>
           </label>
-        </fieldset>        
+        </fieldset>
         <fieldset class="last">
           <label>Workgroup
           <span><input type="text" name="workgroup" value="{{workgroup}}"
                        placeholder="mywork" /></span>
           </label>
         </fieldset>
-        
+
         <input type="hidden" name="action" id="syncaction" />
-        
+
         <div id="syncbtns">
           <button class="syncbtn" data-action="push"><div>Push</div></button>
           <button class="syncbtn middle" data-action="pull"><div>Pull</div></button>
@@ -107,11 +107,11 @@
     <script type="text/html" id="login_tpl">
       <form action="#login" class="modalform">
         <h3>Focus - Login</h3>
-        
+
         <label for="email">
           <span>Email</span>
-          <input type="email" autocorrect="off" autocapitalize="off" 
-                 value="" name="email" 
+          <input type="email" autocorrect="off" autocapitalize="off"
+                 value="" name="email"
                  placeholder="email" />
         </label>
         <label for="password">
@@ -126,13 +126,13 @@
     <script type="text/html" id="signup">
       <form action="#signup" class="modalform">
         <h3>Focus - Sign Up</h3>
-        
+
         <img id="gravatar_preview" />
 
         <label for="email">
           <span>Email</span>
-          <input type="email" autocorrect="off" autocapitalize="off" 
-                 id="signup_email" 
+          <input type="email" autocorrect="off" autocapitalize="off"
+                 id="signup_email"
                  value="" name="email" placeholder="username" />
         </label>
         <label for="password" {{display_pass}}>
@@ -142,28 +142,28 @@
 
         <label for="name">
           <span>Nickname</span>
-          <input type="text" autocorrect="off" autocapitalize="off" 
+          <input type="text" autocorrect="off" autocapitalize="off"
                  id="signup_name" value="" name="name" />
         </label>
 
         <label for="email" style="display:none;" >
           <span>WorkGroup</span>
-          <input type="text" autocorrect="off" autocapitalize="off" 
+          <input type="text" autocorrect="off" autocapitalize="off"
                  value="local" name="workgroup" placeholder="username" />
         </label>
         <input type="submit" value="Sign Up" />
         <span {{display_pass}}>or <a href="#!/login">Login</a></span>
       </form>
     </script>
-    
+
     <script type="text/html" id="users_tpl">
       <ul id="items" class="users">
         {{#users}}{{#profile}}
         <li class="user" data-user="{{name}}">
             <a href="#!/team/{{name}}">
               <div class="ava">
-                <img src="{{gravatar_url}}" 
-                     onerror="this.src='./outline.png';" 
+                <img src="{{gravatar_url}}"
+                     onerror="this.src='./static/outline.png';"
                      title="{{name}}" />
               </div>
               <h3>{{name}}</h3>
@@ -176,7 +176,7 @@
 
     <script type="text/html" id="error404">
       <h2>404 Error, Page "{{url}}" Not Found</h2>
-      <p class="err404">Sorry we seem to have misplaced this page, 
+      <p class="err404">Sorry we seem to have misplaced this page,
         Please click <a href="#!">here</a> to go home.</p>
     </script>
 
@@ -188,16 +188,16 @@
           <div data-id="{{_id}}" class="item {{state}} {{blocked}}">
             <div class="ava">
               {{#profile}}
-              <img src="{{gravatar_url}}" 
+              <img src="{{gravatar_url}}"
                    class="gravatar"
-                   onerror="this.src='./outline.png';" 
+                   onerror="this.src='./static/outline.png';"
                    alt="{{name}}" title="{{name}}"/>
               <span class="name">{{nickname}}</span>
               {{/profile}}
               </div>
             <span class="state">
               <span class="status">{{state}}</span>
-              <a class="public"><img src="./eye2.png" /></a>
+              <a class="public"><img src="./static/eye2.png" /></a>
             </span>
             <div class="message">{{{message}}}</div>
           </div>
@@ -212,8 +212,8 @@
     <script type="text/html" id="overview_tpl">
       {{#profile}}
       <div class="profileheader">
-        <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}" 
-             onerror="this.src='./outline.png';" class="gravatar" />
+        <img src="{{gravatar_url}}" alt="{{name}}" title="{{name}}"
+             onerror="this.src='./static/outline.png';" class="gravatar" />
         <h2>{{name}}</h2>
       </div>
       {{/profile}}
@@ -225,7 +225,7 @@
       {{{done}}}
     </script>
 
-    
+
     <script type="text/html" id="select_workgroup">
 
       <h2>Enter a Workgroup Name</h2>
@@ -244,8 +244,8 @@
         <img id="gravatar_preview" />
         <fieldset>
           <label for="email">Email
-            <span><input type="email" autocorrect="off" autocapitalize="off" 
-                         id="signup_email" 
+            <span><input type="email" autocorrect="off" autocapitalize="off"
+                         id="signup_email"
                          value="" name="email" placeholder="username" />
             </span>
           </label>
@@ -254,7 +254,7 @@
         <fieldset class="last">
           <label for="name">
             Nickname
-            <span><input type="text" autocorrect="off" autocapitalize="off" 
+            <span><input type="text" autocorrect="off" autocapitalize="off"
                          id="signup_name" value="" name="name" /></span>
           </label>
         </fieldset>
@@ -269,7 +269,7 @@
 
         <div id="editheader">
           <a href="Javascript:history.back()" class="back btn">&lt; Back</a>
-          
+
           <p class="details">
             {{#created}}Created by {{created_by}}, {{created_at}}{{/created}}
             <br />
@@ -280,7 +280,7 @@
         <textarea name="message">{{{message}}}</textarea>
         <input type="hidden" name="_rev" value="{{_rev}}">
         <input type="hidden" name="_id" value="{{_id}}" />
-        
+
         <fieldset class="first">
           <label for="assigned">Assigned to:
           <span>
@@ -291,13 +291,13 @@
             </select>
             {{#profile}}
             <img src="{{gravatar_url}}" id="avapreview" class="gravatar"
-                 onerror="this.src='./outline.png';" 
+                 onerror="this.src='./static/outline.png';"
                  alt="{{name}}" title="{{name}}"/>
             {{/profile}}
           </span>
           </label>
         </fieldset>
-        
+
         <fieldset>
           <label for="state">State:
             <span>
@@ -318,7 +318,7 @@
             </span>
           </label>
         </fieldset>
-        
+
         <fieldset class="last">
           <label for="blocked">Blocked
             <span>
@@ -327,14 +327,14 @@
             </span>
           </label>
         </fieldset>
-     
+
         <div class="btns">
           <input type="submit" value="Finish Editing" class="btn confirm" />
-          <input type="button" name="delete" value="Delete" 
-                 class="btn delete" /> 
+          <input type="button" name="delete" value="Delete"
+                 class="btn delete" />
         </div>
       </form>
-      
+
       <form action="#delete" id="deleteform">
         <input type="hidden" name="_rev" value="{{_rev}}" />
         <input type="hidden" name="_id" value="{{_id}}" />
@@ -344,13 +344,13 @@
 
   </body>
 
-  <script src="../../../_utils/script/jquery.js"></script>
-  <script src="../../../_utils/script/jquery.couch.js"></script>
-  <script src="../../../_utils/script/sha1.js"></script>
-  
-  <script src="./md5.js"></script>
-  <script src="./mustache.js"></script>
-  <script src="./utils.js"></script>
-  <script src="./focus.js"></script>
-  
+  <script src="./_couchdb/_utils/script/jquery.js"></script>
+  <script src="./_couchdb/_utils/script/jquery.couch.js"></script>
+  <script src="./_couchdb/_utils/script/sha1.js"></script>
+
+  <script src="./static/md5.js"></script>
+  <script src="./static/mustache.js"></script>
+  <script src="./static/utils.js"></script>
+  <script src="./static/focus.js"></script>
+
 </html>
